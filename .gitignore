@@ -1,0 +1,15 @@
+# Signing keys — NEVER commit. A leaked developer key lets others publish as you.
+developer_key
+developer_key.*
+*.der
+*.pem
+
+# Build output
+bin/
+*.prg
+*.prg.debug.xml
+*.iq
+
+# Editor / OS
+.DS_Store
+Thumbs.db
