@@ -5,4 +5,16 @@
     <!-- Default text for the small branding mark -->
     <string id="RescueMark">RESCUE</string>
 
+    <!-- Layout presets in the on-device editor -->
+    <string id="StyleMinimal">Minimal</string>
+    <string id="StyleFull">Full</string>
+
+    <!-- Data slot colours in the on-device editor -->
+    <string id="ColorWhite">White</string>
+    <string id="ColorLightGray">Light Gray</string>
+    <string id="ColorAmber">Amber</string>
+    <string id="ColorRed">Red</string>
+    <string id="ColorGreen">Green</string>
+    <string id="ColorBlue">Blue</string>
+
 </strings>

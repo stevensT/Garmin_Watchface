@@ -1,0 +1,44 @@
+<resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <watchface-config>
+
+        <!-- Layout presets. Minimal is the daily-wear face; Full turns on every slot. -->
+        <styles>
+            <style id="1" label="@Strings.StyleMinimal" default="true"/>
+            <style id="2" label="@Strings.StyleFull"/>
+        </styles>
+
+        <!-- Colour of the main HH:MM readout. Free choice from the on-watch picker. -->
+        <accentColors allowAny="true"/>
+
+        <!--
+            The six data slots. Ids 1-6 come back as `uniqueIdentifier` in
+            updateConfiguration() and must stay stable: the saved editor variants
+            key on them.
+
+            `allowAny` and <type> children are mutually exclusive - listing types
+            makes the compiler ignore allowAny and pins the slot to that list. Every
+            slot should offer the full complication list, so the per-slot defaults
+            live in code instead (see Slots.DEFAULT_TYPES), applied when the editor
+            hands back a null complicationId.
+        -->
+        <data>
+            <complication id="1" allowAny="true"/>
+            <complication id="2" allowAny="true"/>
+            <complication id="3" allowAny="true"/>
+            <complication id="4" allowAny="true"/>
+            <complication id="5" allowAny="true"/>
+            <complication id="6" allowAny="true"/>
+        </data>
+
+        <!-- Colour of the slot values. A short list reads better on-watch than a picker. -->
+        <dataColors>
+            <color label="@Strings.ColorWhite" default="true">0xFFFFFF</color>
+            <color label="@Strings.ColorLightGray">0xC0C0C0</color>
+            <color label="@Strings.ColorAmber">0xFFAA00</color>
+            <color label="@Strings.ColorRed">0xFF4030</color>
+            <color label="@Strings.ColorGreen">0x00AA55</color>
+            <color label="@Strings.ColorBlue">0x00AAFF</color>
+        </dataColors>
+
+    </watchface-config>
+</resources>
