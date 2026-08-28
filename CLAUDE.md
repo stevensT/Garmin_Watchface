@@ -44,6 +44,12 @@ monkeyc -e -f monkey.jungle -y developer_key -o bin/RescueFace.iq -w
 
 From VS Code: **Ctrl+F5** builds and opens the simulator.
 
+> **`monkeyc` does not reload a running simulator.** The simulator keeps executing the
+> binary that `monkeydo` loaded, so after any source change you must rebuild *and*
+> re-run `monkeydo` — otherwise you are looking at stale output and will "fix" bugs
+> that are already fixed. When a change appears not to have taken effect, compare the
+> `monkeydo`/`java` process start time against the `.prg` mtime before touching the code.
+
 `manifest.xml` is a generated file — change app id, products, permissions, and
 languages through the "Monkey C: Edit …" command-palette actions rather than by hand.
 
