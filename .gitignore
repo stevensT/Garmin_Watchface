@@ -13,3 +13,5 @@ bin/
 # Editor / OS
 .DS_Store
 Thumbs.db
+CLAUDE.md
+tasks/todo.md
