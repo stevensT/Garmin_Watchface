@@ -8,4 +8,11 @@
         Licensed under the SIL Open Font License 1.1 — see OFL.txt alongside.
     -->
     <font id="TimeNumbers" filename="time_numbers.fnt" filter="0123456789:"/>
+
+    <!--
+        The bottom gauge's readout, at its own smaller size. FONT_XTINY is the
+        smallest system font there is — FONT_GLANCE is bigger, not smaller — and the
+        gauge wants to sit quieter than a slot value, so it gets its own face.
+    -->
+    <font id="ArcValue" filename="arc_value.fnt" filter="0123456789%"/>
 </resources>

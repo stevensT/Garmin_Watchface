@@ -1,3 +1,38 @@
 <drawables>
     <bitmap id="LauncherIcon" filename="launcher_icon.png" />
+
+    <!--
+        Slot icons, standing in for the text label under a value. Rasterised from
+        Material Symbols (Apache 2.0) by tools/icongen; see its README to reproduce
+        or extend the set. Their colour is baked in rather than tinted at runtime,
+        because Connect IQ draws a bitmap as it finds it and the label colour these
+        replace is a constant.
+
+        Only the complications worth an icon have one. A slot can hold any of 44
+        types, and the rest keep their text label.
+    -->
+    <bitmap id="IconHeartRate" filename="icon_heart_rate.png" />
+    <bitmap id="IconSteps" filename="icon_steps.png" />
+    <bitmap id="IconBattery" filename="icon_battery.png" />
+    <bitmap id="IconBodyBattery" filename="icon_body_battery.png" />
+    <bitmap id="IconCalories" filename="icon_calories.png" />
+    <bitmap id="IconFloors" filename="icon_floors.png" />
+    <bitmap id="IconTemperature" filename="icon_temperature.png" />
+    <bitmap id="IconAltitude" filename="icon_altitude.png" />
+    <bitmap id="IconSunrise" filename="icon_sunrise.png" />
+    <bitmap id="IconSunset" filename="icon_sunset.png" />
+    <bitmap id="IconNotifications" filename="icon_notifications.png" />
+    <bitmap id="IconSleep" filename="icon_sleep.png" />
+    <bitmap id="IconPulseOx" filename="icon_pulse_ox.png" />
+    <bitmap id="IconRespiration" filename="icon_respiration.png" />
+    <bitmap id="IconIntensity" filename="icon_intensity.png" />
+    <bitmap id="IconDate" filename="icon_date.png" />
+
+    <!-- Connection status, drawn beside the time only while each is actually on.
+         Generated at a smaller size than the slot icons so the column reads as
+         status rather than as more data. -->
+    <bitmap id="IconStatusBle" filename="icon_status_ble.png" />
+    <bitmap id="IconStatusWifi" filename="icon_status_wifi.png" />
+    <bitmap id="IconStatusLte" filename="icon_status_lte.png" />
+    <bitmap id="IconStatusNotify" filename="icon_status_notify.png" />
 </drawables>

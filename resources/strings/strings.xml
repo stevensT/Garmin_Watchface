@@ -25,6 +25,10 @@
     <string id="BackgroundCharcoal">Charcoal</string>
     <string id="BackgroundMidnight">Midnight Blue</string>
     <string id="SettingShowSeconds">Show seconds</string>
+    <string id="SettingStatusIcons">Connection icons</string>
+    <string id="SettingStatusIconsPrompt">Bluetooth, wifi, LTE and unread notifications, shown beside the time. Only what is connected is drawn.</string>
+    <string id="SettingSlotIcons">Slot icons</string>
+    <string id="SettingSlotIconsPrompt">Show an icon under a slot value instead of its name. Slots whose data has no icon keep their name.</string>
     <string id="SettingArc">Bottom gauge</string>
     <string id="SettingArcPrompt">An arc along the bottom rim. Its value replaces the mark, so the two are not shown together.</string>
     <string id="ArcBattery">Battery</string>

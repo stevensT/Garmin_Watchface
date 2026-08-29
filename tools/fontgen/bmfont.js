@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { createCanvas, GlobalFonts } = require('@napi-rs/canvas');
 
-const CHARS = '0123456789:';
+const CHARS = process.env.CHARS || '0123456789:';
 const PAD = 8;
 
 function generate(ttfPath, family, weight, size, outDir, outName) {

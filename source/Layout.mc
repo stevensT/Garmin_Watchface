@@ -27,6 +27,7 @@ module Layout {
     //! as a headline, but no longer competing with the main readout.
     const SECOND_TIME_FONT = Graphics.FONT_SMALL;
 
+
     //! Vertical centre of the branding mark, at the top rim above the slots.
     //!
     //! The same in both styles, and high enough that it reads as a header rather
@@ -44,6 +45,11 @@ module Layout {
     //! is already 157 px. Past this the mark is trimmed rather than allowed to run
     //! off the side of a round screen.
     const MARK_MAX_WIDTH = 0.39;
+
+    //! Horizontal centre of the connection status column, in the space left of the
+    //! numerals. They span x 107-347 at 454 px wide, so this sits clear of them
+    //! and clear of the rule above, which starts at x 86.
+    const STATUS_X = 0.132;
 
     //! The two rules bracketing the time block: one between the top row and the
     //! numerals, one below the second time.

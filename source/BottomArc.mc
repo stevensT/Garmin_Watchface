@@ -1,8 +1,10 @@
 import Toybox.ActivityMonitor;
+import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.Math;
 import Toybox.System;
+import Toybox.WatchUi;
 
 //! The gauge along the bottom rim.
 //!
@@ -34,6 +36,17 @@ module BottomArc {
     //! At 454x454 these put the arc's ends at y 406, five pixels below the bottom
     //! row of slots, and its body clears the value text sitting inside it. Widen
     //! the sweep and the ends climb into the outer slots.
+    //! Gap between the icon and its value
+    const ICON_GAP = 6;
+
+    //! The icon currently loaded, and what it is for. The metric only changes when
+    //! the user changes it, so this loads once in practice.
+    var _icon as WatchUi.BitmapResource?;
+    var _iconMetric as Number = OFF;
+
+    //! The readout's face, loaded on first use
+    var _font as WatchUi.FontResource?;
+
     const START = 235;
     const END = 305;
 
@@ -77,10 +90,61 @@ module BottomArc {
         // which does not care, but a future line would.
         dc.setPenWidth(1);
 
-        dc.setColor(text, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, (height * Layout.ARC_VALUE_Y).toNumber(),
-            Graphics.FONT_XTINY, reading[1] as String,
-            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        drawValue(dc, centerX, (height * Layout.ARC_VALUE_Y).toNumber(),
+            metric, reading[1] as String, text);
+    }
+
+    //! Draw the arc's icon and value as one centred group.
+    //!
+    //! The value is smaller than a slot's, and the icon does the naming: a number
+    //! on the rim with no label is ambiguous, and "BAT" spelled out next to a
+    //! battery would be saying it twice.
+    //! @param dc The drawing context
+    //! @param centerX Horizontal centre of the face
+    //! @param y Vertical centre of the readout
+    //! @param metric What the arc tracks, which picks the icon
+    //! @param value The text to draw
+    //! @param color Colour of the value
+    function drawValue(dc as Dc, centerX as Number, y as Number, metric as Number,
+                       value as String, color as Graphics.ColorType) as Void {
+        var icon = iconFor(metric);
+        var font = valueFont();
+        var textWidth = dc.getTextWidthInPixels(value, font);
+        var iconWidth = (icon == null) ? 0 : icon.getWidth() + ICON_GAP;
+        var left = centerX - ((iconWidth + textWidth) / 2);
+
+        if (icon != null) {
+            dc.drawBitmap(left, y - (icon.getHeight() / 2), icon);
+        }
+
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(left + iconWidth, y, font, value,
+            Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
+    //! The readout's font, loaded once, falling back to the smallest system face
+    //! @return The font to draw the value in
+    function valueFont() as Graphics.FontType {
+        if (_font == null) {
+            _font = Application.loadResource(Rez.Fonts.ArcValue) as WatchUi.FontResource;
+        }
+
+        var font = _font;
+        return (font != null) ? font : Graphics.FONT_XTINY;
+    }
+
+    //! The icon for a metric, loaded once and kept
+    //! @param metric What the arc tracks
+    //! @return The icon, or null if the metric has none
+    function iconFor(metric as Number) as WatchUi.BitmapResource? {
+        if (metric != _iconMetric) {
+            _icon = (metric == BATTERY)
+                ? Application.loadResource(Rez.Drawables.IconBattery) as WatchUi.BitmapResource
+                : Application.loadResource(Rez.Drawables.IconSteps) as WatchUi.BitmapResource;
+            _iconMetric = metric;
+        }
+
+        return _icon;
     }
 
     //! Read the metric

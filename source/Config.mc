@@ -19,6 +19,8 @@ module Config {
     const BACKGROUND_DEFAULT = Graphics.COLOR_BLACK;
     const SHOW_SECONDS_DEFAULT = false;
     const ARC_METRIC_DEFAULT = BottomArc.BATTERY;
+    const SLOT_ICONS_DEFAULT = true;
+    const STATUS_ICONS_DEFAULT = true;
     const ALWAYS_ON_DEFAULT = true;
     const ALWAYS_ON_SECONDS_DEFAULT = false;
     const SECOND_TIME_OFFSET_DEFAULT = 0;
@@ -40,6 +42,8 @@ module Config {
     var _background as Number = BACKGROUND_DEFAULT;
     var _showSeconds as Boolean = SHOW_SECONDS_DEFAULT;
     var _arcMetric as Number = ARC_METRIC_DEFAULT;
+    var _slotIcons as Boolean = SLOT_ICONS_DEFAULT;
+    var _statusIcons as Boolean = STATUS_ICONS_DEFAULT;
     var _alwaysOn as Boolean = ALWAYS_ON_DEFAULT;
     var _alwaysOnSeconds as Boolean = ALWAYS_ON_SECONDS_DEFAULT;
     var _secondTimeOffset as Number = SECOND_TIME_OFFSET_DEFAULT;
@@ -51,6 +55,9 @@ module Config {
     function reload() as Void {
         _background = numberFor("backgroundColor", BACKGROUND_DEFAULT);
         _showSeconds = booleanFor("showSeconds", SHOW_SECONDS_DEFAULT);
+
+        _slotIcons = booleanFor("slotIcons", SLOT_ICONS_DEFAULT);
+        _statusIcons = booleanFor("statusIcons", STATUS_ICONS_DEFAULT);
 
         var arc = numberFor("arcMetric", ARC_METRIC_DEFAULT);
         _arcMetric = ((arc == BottomArc.OFF) || (arc == BottomArc.BATTERY)
@@ -81,6 +88,18 @@ module Config {
     //! @return true if seconds are wanted
     function showSeconds() as Boolean {
         return _showSeconds;
+    }
+
+    //! Whether the connection status column is drawn
+    //! @return true if status icons are wanted
+    function statusIcons() as Boolean {
+        return _statusIcons;
+    }
+
+    //! Whether slots show an icon in place of their name
+    //! @return true if icons are wanted
+    function slotIcons() as Boolean {
+        return _slotIcons;
     }
 
     //! What the bottom rim gauge tracks

@@ -20,6 +20,12 @@
     <!-- The bottom rim gauge: 0 off, 1 battery, 2 steps. Matches BottomArc.Metric. -->
     <property id="arcMetric" type="number">1</property>
 
+    <!-- Draw an icon under a slot value instead of its name, where one exists -->
+    <property id="slotIcons" type="boolean">true</property>
+
+    <!-- Bluetooth, wifi, LTE and notifications, left of the time -->
+    <property id="statusIcons" type="boolean">true</property>
+
     <!-- Always-on behaviour. Read in Phase 5. -->
     <property id="alwaysOn" type="boolean">true</property>
     <property id="alwaysOnSeconds" type="boolean">false</property>

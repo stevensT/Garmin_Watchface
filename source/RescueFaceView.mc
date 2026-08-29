@@ -46,6 +46,10 @@ class RescueFaceView extends WatchUi.WatchFace {
     //! not survive the app shutting down, so this is per-run state.
     private var _subscribed as Boolean = false;
 
+    //! Whether the slots are currently carrying icons, so a change to the setting
+    //! can be noticed without the view being told about it
+    private var _iconsShown as Boolean = false;
+
     //! Screen size and the measured height of a slot's label-over-value stack,
     //! kept from onLayout so slots can be repositioned without a drawing context
     private var _screenWidth as Number = 0;
@@ -71,6 +75,7 @@ class RescueFaceView extends WatchUi.WatchFace {
         if (settings == null) {
             // The device has no on-device editor. Everything keeps its default.
             applyDefaultSlots();
+            applySlotIcons();
             refreshSlotValues();
             subscribeSlots();
             return;
@@ -118,6 +123,23 @@ class RescueFaceView extends WatchUi.WatchFace {
     private function applyDefaultSlots() as Void {
         for (var slot = Slots.ONE; slot <= Slots.COUNT; ++slot) {
             _slotIds[slot - 1] = new Complications.Id(Slots.defaultType(slot));
+        }
+    }
+
+    //! Give each slot the icon for the complication it now holds, or none if this
+    //! complication has no icon or the user asked for names.
+    private function applySlotIcons() as Void {
+        _iconsShown = Config.slotIcons();
+
+        for (var slot = Slots.ONE; slot <= Slots.COUNT; ++slot) {
+            var complicationId = _slotIds[slot - 1];
+            var icon = null;
+
+            if (_iconsShown && (complicationId != null)) {
+                icon = SlotIcons.forType(complicationId.getType());
+            }
+
+            _slots[slot - 1].setIcon(icon);
         }
     }
 
@@ -175,6 +197,7 @@ class RescueFaceView extends WatchUi.WatchFace {
         // The styles stack the face differently, so a style change moves the slots
         positionSlots();
 
+        applySlotIcons();
         refreshSlotValues();
         subscribeSlots();
         WatchUi.requestUpdate();
@@ -298,6 +321,10 @@ class RescueFaceView extends WatchUi.WatchFace {
 
         drawRules(dc, width, height);
         drawTime(dc, width, height, clockTime);
+
+        if (Config.statusIcons()) {
+            StatusIcons.draw(dc, width, height);
+        }
         SecondTime.draw(dc, width, height, _style, _theme.data,
             Config.secondTimeOffset(), Config.secondTimeLabel());
         drawSlots(dc);
@@ -343,6 +370,12 @@ class RescueFaceView extends WatchUi.WatchFace {
     //! Draw the slots the current style shows
     //! @param dc The drawing context
     private function drawSlots(dc as Dc) as Void {
+        // The setting can change without the view hearing about it: the app
+        // reloads Config and asks for a repaint, and this is the repaint.
+        if (_iconsShown != Config.slotIcons()) {
+            applySlotIcons();
+        }
+
         var visible = Layout.visibleSlots(_style);
 
         for (var i = 0; i < visible.size(); ++i) {

@@ -14,6 +14,16 @@
             <settingConfig type="boolean"/>
         </setting>
 
+        <setting propertyKey="@Properties.statusIcons" title="@Strings.SettingStatusIcons"
+                 prompt="@Strings.SettingStatusIconsPrompt">
+            <settingConfig type="boolean"/>
+        </setting>
+
+        <setting propertyKey="@Properties.slotIcons" title="@Strings.SettingSlotIcons"
+                 prompt="@Strings.SettingSlotIconsPrompt">
+            <settingConfig type="boolean"/>
+        </setting>
+
         <setting propertyKey="@Properties.arcMetric" title="@Strings.SettingArc"
                  prompt="@Strings.SettingArcPrompt">
             <settingConfig type="list">

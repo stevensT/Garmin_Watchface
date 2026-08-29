@@ -14,6 +14,7 @@ class SlotDrawable extends WatchUi.Drawable {
     static const EMPTY = "--";
 
     private var _label as String = "";
+    private var _icon as WatchUi.BitmapResource?;
     private var _value as String = EMPTY;
     private var _valueColor as Graphics.ColorType = Graphics.COLOR_WHITE;
     private var _labelColor as Graphics.ColorType = Graphics.COLOR_LT_GRAY;
@@ -67,6 +68,12 @@ class SlotDrawable extends WatchUi.Drawable {
         return value.toUpper().find(label.toUpper()) == 0;
     }
 
+    //! Set the icon drawn in place of the text label, or null to use the text.
+    //! @param icon The icon for this slot's complication
+    function setIcon(icon as WatchUi.BitmapResource?) as Void {
+        _icon = icon;
+    }
+
     //! Set the drawing colours
     //! @param value Colour of the value, from the editor's data colour
     //! @param label Colour of the label
@@ -95,6 +102,16 @@ class SlotDrawable extends WatchUi.Drawable {
         dc.drawText(centerX, locY + (band / 2), fitted[1] as Graphics.FontType,
             fitted[0] as String,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var icon = _icon;
+        if (icon != null) {
+            // Centred in the label's line rather than sitting on top of it, since
+            // an icon's height varies with its shape while a line of text does not.
+            var labelHeight = dc.getFontHeight(Graphics.FONT_XTINY);
+            dc.drawBitmap(centerX - (icon.getWidth() / 2),
+                locY + band + ((labelHeight - icon.getHeight()) / 2), icon);
+            return;
+        }
 
         dc.setColor(_labelColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(centerX, locY + band, Graphics.FONT_XTINY, _label,
