@@ -15,11 +15,12 @@
             updateConfiguration() and must stay stable: the saved editor variants
             key on them.
 
-            `allowAny` and <type> children are mutually exclusive - listing types
-            makes the compiler ignore allowAny and pins the slot to that list. Every
-            slot should offer the full complication list, so the per-slot defaults
-            live in code instead (see Slots.DEFAULT_TYPES), applied when the editor
-            hands back a null complicationId.
+            `allowAny` and <type> children are mutually exclusive - the SDK states
+            that a type default should not be given alongside allowAny, and listing
+            types pins the slot to that list. Every slot should offer the full
+            complication list, so the per-slot defaults live in code instead (see
+            Slots.defaultType), applied when the editor hands back a null
+            complicationId - which is what it does for an untouched slot.
         -->
         <data>
             <complication id="1" allowAny="true"/>

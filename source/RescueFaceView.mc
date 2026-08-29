@@ -5,8 +5,6 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.Math;
 import Toybox.System;
-import Toybox.Time;
-import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
 
 //! The watch face itself.
@@ -42,9 +40,9 @@ class RescueFaceView extends WatchUi.WatchFace {
     //! system to draw and pulse
     private var _editingSlot as Boolean = false;
 
-    //! Minute the slot values were last read, so a per-second redraw in high-power
-    //! mode does not re-read six complications every tick
-    private var _valuesReadAtMinute as Number = -1;
+    //! True once the complication change callback is registered. Subscriptions do
+    //! not survive the app shutting down, so this is per-run state.
+    private var _subscribed as Boolean = false;
 
     //! Screen size and the measured height of a slot's label-over-value stack,
     //! kept from onLayout so slots can be repositioned without a drawing context
@@ -70,6 +68,7 @@ class RescueFaceView extends WatchUi.WatchFace {
             // The device has no on-device editor. Everything keeps its default.
             applyDefaultSlots();
             refreshSlotValues();
+            subscribeSlots();
             return;
         }
 
@@ -172,51 +171,115 @@ class RescueFaceView extends WatchUi.WatchFace {
         // The styles stack the face differently, so a style change moves the slots
         positionSlots();
 
-        _valuesReadAtMinute = -1;
         refreshSlotValues();
+        subscribeSlots();
         WatchUi.requestUpdate();
     }
 
-    //! Read the current value of every slot complication.
+    //! Subscribe to every slot's complication so the system pushes changes.
     //!
-    //! Phase 3 replaces this with `Complications.subscribeToUpdates` plus a change
-    //! callback. Until then the values are pulled once a minute, which is the rate
-    //! the face redraws in the mode that matters.
-    private function refreshSlotValues() as Void {
-        for (var slot = Slots.ONE; slot <= Slots.COUNT; ++slot) {
-            var drawable = _slots[slot - 1];
-            var complicationId = _slotIds[slot - 1];
+    //! Called again after each configuration change, because the user may have
+    //! pointed a slot at a different complication. Two slots are allowed to show
+    //! the same complication, so the whole set is torn down and rebuilt rather
+    //! than unsubscribing slot by slot: dropping one slot's subscription would
+    //! silence the other one.
+    //!
+    //! Editor mode subscribes to nothing. The snapshot taken when a slot is
+    //! selected is all the editor shows.
+    private function subscribeSlots() as Void {
+        if (_editMode) {
+            return;
+        }
 
+        if (!_subscribed) {
+            // Register before subscribing, or the first push has nowhere to land.
+            Complications.registerComplicationChangeCallback(method(:onComplicationChange));
+            _subscribed = true;
+        } else {
+            Complications.unsubscribeFromAllUpdates();
+        }
+
+        for (var slot = Slots.ONE; slot <= Slots.COUNT; ++slot) {
+            var complicationId = _slotIds[slot - 1];
             if (complicationId == null) {
-                drawable.setContent("", SlotDrawable.EMPTY);
                 continue;
             }
 
-            var label = "";
-            var value = SlotDrawable.EMPTY;
-
             try {
-                var complication = Complications.getComplication(complicationId);
-
-                var shortLabel = complication.shortLabel;
-                if (shortLabel == null) {
-                    shortLabel = complication.longLabel;
-                }
-                if (shortLabel != null) {
-                    label = shortLabel;
-                }
-
-                var currentValue = complication.value;
-                if (currentValue != null) {
-                    value = formatValue(currentValue, complication.unit);
-                }
+                Complications.subscribeToUpdates(complicationId);
             } catch (ex) {
-                // The complication is unsupported on this device, or has no data.
-                // The slot shows "--" rather than taking the face down.
+                // Either the complication does not exist on this device or the
+                // system is out of subscription slots. Either way the slot falls
+                // back to whatever a direct read gives it, which is usually "--".
+            }
+        }
+    }
+
+    //! The system pushed a new value for a complication
+    //! @param id The complication that changed
+    function onComplicationChange(id as Complications.Id) as Void {
+        var changed = false;
+
+        // A complication can occupy more than one slot, so every slot is checked.
+        for (var slot = Slots.ONE; slot <= Slots.COUNT; ++slot) {
+            var complicationId = _slotIds[slot - 1];
+            if ((complicationId != null) && id.equals(complicationId)) {
+                changed = refreshSlot(slot) || changed;
+            }
+        }
+
+        if (changed) {
+            WatchUi.requestUpdate();
+        }
+    }
+
+    //! Read the current value of every slot complication
+    private function refreshSlotValues() as Void {
+        for (var slot = Slots.ONE; slot <= Slots.COUNT; ++slot) {
+            refreshSlot(slot);
+        }
+    }
+
+    //! Read one slot's complication and cache what it draws.
+    //!
+    //! The value is held on the drawable rather than re-read at draw time: the
+    //! system pushes changes when they happen, and `onUpdate` runs far more often
+    //! than the data underneath it moves.
+    //! @param slot The slot to refresh
+    //! @return true if what the slot draws changed
+    private function refreshSlot(slot as Slots.Id) as Boolean {
+        var drawable = _slots[slot - 1];
+        var complicationId = _slotIds[slot - 1];
+
+        if (complicationId == null) {
+            return drawable.setContent("", SlotDrawable.EMPTY);
+        }
+
+        var label = "";
+        var value = SlotDrawable.EMPTY;
+
+        try {
+            var complication = Complications.getComplication(complicationId);
+
+            var shortLabel = complication.shortLabel;
+            if (shortLabel == null) {
+                shortLabel = complication.longLabel;
+            }
+            if (shortLabel != null) {
+                label = shortLabel;
             }
 
-            drawable.setContent(label, value);
+            var currentValue = complication.value;
+            if (currentValue != null) {
+                value = formatValue(currentValue, complication.unit);
+            }
+        } catch (ex) {
+            // The complication is unsupported on this device, has no data, or its
+            // publishing app was uninstalled — the system sends a change for that
+            // too. The slot shows "--" rather than taking the face down.
         }
+
+        return drawable.setContent(label, value);
     }
 
     //! Turn a complication's raw value into something that fits a slot.
@@ -252,18 +315,12 @@ class RescueFaceView extends WatchUi.WatchFace {
         var height = dc.getHeight();
         var clockTime = System.getClockTime();
 
-        // The editor only needs the snapshot taken when a configuration is applied.
-        // Worn normally, values are re-read on the minute.
-        if (!_editMode && (clockTime.min != _valuesReadAtMinute)) {
-            refreshSlotValues();
-            _valuesReadAtMinute = clockTime.min;
-        }
-
         dc.setColor(Graphics.COLOR_TRANSPARENT, _theme.background);
         dc.clear();
 
         drawTime(dc, width, height, clockTime);
-        drawSecondTime(dc, width, height);
+        SecondTime.draw(dc, width, height, _style, _theme.data,
+            SecondTime.DEFAULT_OFFSET, SecondTime.DEFAULT_LABEL);
         drawSlots(dc);
         drawRescueMark(dc, width, height);
     }
@@ -345,21 +402,6 @@ class RescueFaceView extends WatchUi.WatchFace {
             Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
-    //! Draw the second-time readout. Fixed to UTC/ZULU until Phase 4 wires the
-    //! offset and label to phone settings. Its position on the face is fixed: it
-    //! is not one of the six slots.
-    //! @param dc The drawing context
-    //! @param width Screen width
-    //! @param height Screen height
-    private function drawSecondTime(dc as Dc, width as Number, height as Number) as Void {
-        var utc = Gregorian.utcInfo(Time.now(), Time.FORMAT_SHORT);
-        var text = Lang.format("$1$$2$Z", [utc.hour.format("%02d"), utc.min.format("%02d")]);
-
-        dc.setColor(_theme.data, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width / 2, (height * Layout.zuluY(_style)).toNumber(), Graphics.FONT_MEDIUM, text,
-            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-    }
-
     //! Draw the small branding mark
     //! @param dc The drawing context
     //! @param width Screen width
@@ -421,9 +463,12 @@ class RescueFaceView extends WatchUi.WatchFace {
         WatchUi.requestUpdate();
     }
 
-    //! The device is leaving low-power mode
+    //! The device is leaving low-power mode, which means the user just raised the
+    //! watch. Values normally arrive by push, but a slot whose subscription was
+    //! refused never gets one, so this is where those catch up.
     function onExitSleep() as Void {
         _lowPower = false;
+        refreshSlotValues();
         WatchUi.requestUpdate();
     }
 }

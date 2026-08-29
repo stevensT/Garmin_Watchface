@@ -31,11 +31,21 @@ class SlotDrawable extends WatchUi.Drawable {
     }
 
     //! Set the label and value to draw
+    //!
+    //! Reports whether anything actually moved. A complication can push a value
+    //! identical to the one already shown — battery does it constantly — and there
+    //! is no reason to repaint the face for that.
     //! @param label The complication's short label, or "" for none
     //! @param value The complication's value, already formatted
-    function setContent(label as String, value as String) as Void {
+    //! @return true if the drawn text changed
+    function setContent(label as String, value as String) as Boolean {
+        if (_label.equals(label) && _value.equals(value)) {
+            return false;
+        }
+
         _label = label;
         _value = value;
+        return true;
     }
 
     //! Set the drawing colours
