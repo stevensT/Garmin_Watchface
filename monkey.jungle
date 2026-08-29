@@ -1,1 +1,6 @@
 project.manifest = manifest.xml
+
+# The numerals are a bitmap font, so they do not scale with the screen the way
+# Layout.mc's fractions do. The 416x416 device takes its own atlas, rasterised at
+# 107 against the 454's 117; everything else it shares.
+fenix843mm.resourcePath = $(fenix843mm.resourcePath);resources-416x416

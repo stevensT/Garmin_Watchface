@@ -31,3 +31,20 @@ The script prints the metrics that matter, including `base`, which is where the
 baseline falls inside the line box. Oswald's baseline sits 140 px down a 174 px
 box, well below centre, which is why `Layout.TIME_Y` had to move up to keep the
 digits off the second-time line.
+
+## The 416x416 atlas
+
+A bitmap font does not scale, but `Layout.mc` places everything as a fraction of
+the screen. Shipping the 454's atlas to the 416 device therefore kept a 174 px
+line box while the room around it shrank by 38 px, leaving one pixel between the
+digits and the second-time line where the 454 has eight.
+
+So the smaller face gets its own atlas at 416/454 of the size:
+
+```sh
+node bmfont.js Oswald.ttf Oswald bold 107 ../../resources-416x416/fonts time_numbers
+```
+
+`monkey.jungle` puts `resources-416x416` on `fenix843mm`'s resource path only, and
+the font keeps the same id, so the device build overrides the default and no code
+changes. Regenerate both when the face changes, or they drift apart.

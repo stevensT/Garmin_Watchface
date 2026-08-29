@@ -1,0 +1,16 @@
+<resources>
+    <!--
+        The numerals for the 416x416 face.
+
+        A bitmap font does not scale, and the layout around it does: every position
+        in Layout.mc is a fraction of the screen, so on the smaller face the 454's
+        atlas kept its 174 px line box while the room around it shrank by 38 px. It
+        left one pixel between the digits and the second-time line, against eight on
+        the 454. This is the same Oswald rasterised at 107 rather than 117 — 416/454
+        of the size — which restores the proportions the 454 was tuned to.
+
+        Regenerate with the command in tools/fontgen/README.md, substituting 107.
+        Same Oswald, same SIL Open Font License — see resources/fonts/OFL.txt.
+    -->
+    <font id="TimeNumbers" filename="time_numbers.fnt" filter="0123456789:"/>
+</resources>

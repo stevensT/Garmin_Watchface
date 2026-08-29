@@ -60,7 +60,7 @@ module Layout {
     //! lines sit close to what they divide — which is what a rule is for, but it
     //! leaves no margin to spend on a third.
     const RULE_UPPER_Y = 0.295;
-    const MINIMAL_RULE_LOWER_Y = 0.75;
+    const MINIMAL_RULE_LOWER_Y = 0.783;
     const FULL_RULE_LOWER_Y = 0.681;
 
     //! How far a rule reaches across the face
@@ -74,9 +74,15 @@ module Layout {
     }
 
     // Minimal: one slot above the time, nothing below it but the second time.
-    // Nothing competes for the lower half, so the second time gets to sit where it
-    // falls naturally rather than where it fits.
-    const MINIMAL_ZULU_Y = 0.645;
+    //
+    // Nothing competes for the lower half, which is exactly the problem: at 0.645
+    // the second time sat tight under the numerals and left the rule dividing
+    // nothing, with 66 px of empty face below it before the arc. The band between
+    // the numerals' ink and the top of the arc is 161 px at 454, and the second
+    // time plus its rule is 62 of that, so the group is centred in the band with
+    // the 99 px left over split evenly above and below. The rule then sits 8 px
+    // under the second time, which is the same relationship Full uses.
+    const MINIMAL_ZULU_Y = 0.705;
     const MINIMAL_TOP_ROW_Y = 0.20;
 
     // Full: two rows of three. Every line below the numerals is placed against the
