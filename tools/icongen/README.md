@@ -36,3 +36,29 @@ Each PNG is cropped to its own ink rather than padded to a common square, so the
 slot centres each icon on the label's line. Icon shapes vary a lot — the altitude
 glyph is 28x16 and the battery is 14x26 — and a common box would leave some of
 them visibly off-centre.
+
+## The launcher icon
+
+`launchergen.js` is separate, and draws neither Material Symbols nor a slot icon:
+it writes the app's launcher icon, a ZULU `Z` in the accent green on a dark disc,
+set in the same Oswald as the numerals so the icon and the face read as one
+object.
+
+```sh
+node launchergen.js
+```
+
+It writes **both sizes at once**, and that is the point of it. Launcher icon size
+is a *device* property rather than a resolution one: the 454 devices ask for
+65x65 and `fenix843mm` asks for **60x60**. Shipping only the 65 made the compiler
+scale it and warn. The ratio between the letter and the disc is what makes the two
+files look like the same icon, and it does not survive being rescaled by hand.
+
+The em size is found by measuring the rendered cap height against `CAP_RATIO`
+rather than by assuming a ratio. Oswald puts about 0.72 of its em into a capital,
+but that is exactly the sort of number a font revision changes quietly.
+
+**Do not put a red cross on it.** The placeholder this replaced was one. The red
+cross is protected under the Geneva Conventions and by national law in most
+countries, and unauthorised commercial use is an offence rather than merely a
+trademark question.

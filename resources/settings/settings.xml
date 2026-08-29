@@ -10,7 +10,8 @@
             </settingConfig>
         </setting>
 
-        <setting propertyKey="@Properties.showSeconds" title="@Strings.SettingShowSeconds">
+        <setting propertyKey="@Properties.showSeconds" title="@Strings.SettingShowSeconds"
+                 prompt="@Strings.SettingShowSecondsPrompt">
             <settingConfig type="boolean"/>
         </setting>
 
@@ -51,7 +52,8 @@
 
     <group id="alwaysOn" title="@Strings.GroupAlwaysOn" description="@Strings.GroupAlwaysOnDesc">
 
-        <setting propertyKey="@Properties.alwaysOn" title="@Strings.SettingAlwaysOn">
+        <setting propertyKey="@Properties.alwaysOn" title="@Strings.SettingAlwaysOn"
+                 prompt="@Strings.SettingAlwaysOnPrompt">
             <settingConfig type="boolean"/>
         </setting>
 

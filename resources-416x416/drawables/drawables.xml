@@ -1,0 +1,17 @@
+<resources>
+    <!--
+        The launcher icon for the 43mm device.
+
+        Launcher icon size is a device property, not a resolution one: the 454
+        devices ask for 65x65 and `fenix843mm` asks for 60x60. Shipping only the
+        65 made the build scale it down and warn, which is a resample of a
+        resample once the disc's antialiased edge is involved.
+
+        Same id as the base resource, so this overrides it on the device whose
+        resource path includes this directory. Regenerate both together with
+        tools/icongen/launchergen.js — the ratio between the letter and the disc
+        is what keeps them looking like one icon, and it does not survive being
+        rescaled by hand.
+    -->
+    <bitmap id="LauncherIcon" filename="launcher_icon.png" />
+</resources>

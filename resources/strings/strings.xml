@@ -19,18 +19,19 @@
 
     <!-- Phone settings: display -->
     <string id="GroupDisplay">Display</string>
-    <string id="GroupDisplayDesc">Background and the main time readout.</string>
+    <string id="GroupDisplayDesc">The background, and what the face shows around the time.</string>
     <string id="SettingBackground">Background</string>
     <string id="BackgroundBlack">Black</string>
     <string id="BackgroundCharcoal">Charcoal</string>
     <string id="BackgroundMidnight">Midnight Blue</string>
     <string id="SettingShowSeconds">Show seconds</string>
+    <string id="SettingShowSecondsPrompt">Small digits after the time. Not shown while the screen is dimmed, because the face is only redrawn once a minute then.</string>
     <string id="SettingStatusIcons">Connection icons</string>
     <string id="SettingStatusIconsPrompt">Bluetooth, wifi, LTE and unread notifications, shown beside the time. Only what is connected is drawn.</string>
     <string id="SettingSlotIcons">Slot icons</string>
     <string id="SettingSlotIconsPrompt">Show an icon under a slot value instead of its name. Slots whose data has no icon keep their name.</string>
     <string id="SettingArc">Bottom gauge</string>
-    <string id="SettingArcPrompt">An arc along the bottom rim. Its value replaces the mark, so the two are not shown together.</string>
+    <string id="SettingArcPrompt">An arc along the bottom rim, with its reading inside the curve.</string>
     <string id="ArcBattery">Battery</string>
     <string id="ArcSteps">Steps toward your goal</string>
     <string id="ArcOff">Off</string>
@@ -46,18 +47,19 @@
 
     <!-- Phone settings: always-on -->
     <string id="GroupAlwaysOn">Always on</string>
-    <string id="GroupAlwaysOnDesc">What the face shows while the screen is dimmed.</string>
+    <string id="GroupAlwaysOnDesc">The dimmed face shown while the watch is idle.</string>
     <string id="SettingAlwaysOn">Always-on display</string>
+    <string id="SettingAlwaysOnPrompt">Keep a dimmed face on the screen instead of letting it go dark. It shows the time and the second time only, to stay inside the power budget.</string>
 
     <!-- Phone settings: branding mark -->
     <string id="GroupMark">Mark</string>
-    <string id="GroupMarkDesc">The small line of text near the bottom of the face.</string>
+    <string id="GroupMarkDesc">The small line of text at the top of the face.</string>
     <string id="SettingShowMark">Show the mark</string>
     <string id="SettingMarkPreset">Mark</string>
     <string id="MarkRescue">RESCUE</string>
     <string id="MarkMountUp">MOUNT UP</string>
     <string id="MarkCustom">Custom</string>
     <string id="SettingMarkText">Custom mark text</string>
-    <string id="SettingMarkTextPrompt">Up to ten characters. Only used when Mark is set to Custom.</string>
+    <string id="SettingMarkTextPrompt">Up to ten characters, trimmed if they do not fit across the face. Only used when Mark is set to Custom.</string>
 
 </strings>
