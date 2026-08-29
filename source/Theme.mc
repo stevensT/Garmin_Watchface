@@ -1,25 +1,24 @@
 import Toybox.Graphics;
 import Toybox.Lang;
 
-//! Colour palette for the watch face.
+//! Colours the on-device editor owns.
 //!
-//! Phase 1 hardcodes the values. Phase 2 feeds `accent` and `data` from the
-//! on-device editor (WATCH_FACE_CONFIG_TYPE_ACCENT_COLOR / _COMPLICATION_COLOR)
-//! and `background` from phone settings.
+//! `accent` and `data` come from the editor
+//! (WATCH_FACE_CONFIG_TYPE_ACCENT_COLOR / _COMPLICATION_COLOR) and `muted` is
+//! derived. The background is not here: it belongs to the other configuration
+//! surface, and lives in `Config`.
 class Theme {
 
     //! Colour of the main time readout
     public var accent as Number = ACCENT_DEFAULT;
     //! Colour of data slot values
     public var data as Number = DATA_DEFAULT;
-    //! Screen background
-    public var background as Number = BACKGROUND_DEFAULT;
-    //! Muted colour for labels and the branding mark
+    //! Muted colour for slot labels, the branding mark, and the small labels
+    //! beside the time
     public var muted as Number = MUTED_DEFAULT;
 
     public static const ACCENT_DEFAULT = 0xFF4030;
     public static const DATA_DEFAULT = Graphics.COLOR_WHITE;
-    public static const BACKGROUND_DEFAULT = Graphics.COLOR_BLACK;
     public static const MUTED_DEFAULT = 0x808080;
 
     function initialize() {

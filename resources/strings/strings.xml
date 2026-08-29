@@ -17,4 +17,35 @@
     <string id="ColorGreen">Green</string>
     <string id="ColorBlue">Blue</string>
 
+    <!-- Phone settings: display -->
+    <string id="GroupDisplay">Display</string>
+    <string id="GroupDisplayDesc">Background and the main time readout.</string>
+    <string id="SettingBackground">Background</string>
+    <string id="BackgroundBlack">Black</string>
+    <string id="BackgroundCharcoal">Charcoal</string>
+    <string id="BackgroundMidnight">Midnight Blue</string>
+    <string id="SettingShowSeconds">Show seconds</string>
+
+    <!-- Phone settings: second time -->
+    <string id="GroupSecondTime">Second time</string>
+    <string id="GroupSecondTimeDesc">The fixed second-time readout below the clock. It shows UTC until you offset it.</string>
+    <string id="SettingOffset">Offset from UTC</string>
+    <string id="SettingOffsetPrompt">Minutes from UTC. 0 is ZULU, -420 is US Mountain, 330 is India.</string>
+    <string id="SettingOffsetError">Enter a whole number of minutes between -720 and 840.</string>
+    <string id="SettingZoneLabel">Zone label</string>
+    <string id="SettingZoneLabelPrompt">Up to three characters, shown after the digits. Z for ZULU.</string>
+
+    <!-- Phone settings: always-on -->
+    <string id="GroupAlwaysOn">Always on</string>
+    <string id="GroupAlwaysOnDesc">What the face shows while the screen is dimmed.</string>
+    <string id="SettingAlwaysOn">Always-on display</string>
+    <string id="SettingAlwaysOnSeconds">Seconds while dimmed</string>
+
+    <!-- Phone settings: branding mark -->
+    <string id="GroupMark">Mark</string>
+    <string id="GroupMarkDesc">The small line of text near the bottom of the face.</string>
+    <string id="SettingShowMark">Show the mark</string>
+    <string id="SettingMarkText">Mark text</string>
+    <string id="SettingMarkTextPrompt">Up to ten characters.</string>
+
 </strings>

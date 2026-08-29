@@ -31,11 +31,17 @@ module Layout {
 
     //! Horizontal distance from the centre column to a side column. The top row is
     //! tighter because the round screen has less chord to work with up there.
-    const TOP_SPREAD = 0.24;
+    //!
+    //! Both spreads must stay wider than `SLOT_WIDTH`. A spread narrower than a
+    //! slot overlaps the boxes, and while centred text may still look fine, the
+    //! editor picks the first box a tap falls inside and pulses the wrong slot.
+    const TOP_SPREAD = 0.25;
     const BOTTOM_SPREAD = 0.27;
 
-    //! Width of one slot
-    const SLOT_WIDTH = 0.26;
+    //! Width of one slot. Three of these plus the gaps have to sit inside the
+    //! chord at the top row, which is the narrowest line the slots use: at 454x454
+    //! that chord is about 362 px against 313 px of slot.
+    const SLOT_WIDTH = 0.23;
 
     //! Vertical centre of the second-time line
     //! @param style The layout style

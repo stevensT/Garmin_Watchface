@@ -1,0 +1,58 @@
+<settings>
+
+    <group id="display" title="@Strings.GroupDisplay" description="@Strings.GroupDisplayDesc">
+
+        <setting propertyKey="@Properties.backgroundColor" title="@Strings.SettingBackground">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.BackgroundBlack</listEntry>
+                <listEntry value="1842204">@Strings.BackgroundCharcoal</listEntry>
+                <listEntry value="5160">@Strings.BackgroundMidnight</listEntry>
+            </settingConfig>
+        </setting>
+
+        <setting propertyKey="@Properties.showSeconds" title="@Strings.SettingShowSeconds">
+            <settingConfig type="boolean"/>
+        </setting>
+
+    </group>
+
+    <group id="secondTime" title="@Strings.GroupSecondTime" description="@Strings.GroupSecondTimeDesc">
+
+        <setting propertyKey="@Properties.secondTimeOffset" title="@Strings.SettingOffset"
+                 prompt="@Strings.SettingOffsetPrompt">
+            <settingConfig type="numeric" min="-720" max="840" errorMessage="@Strings.SettingOffsetError"/>
+        </setting>
+
+        <setting propertyKey="@Properties.secondTimeLabel" title="@Strings.SettingZoneLabel"
+                 prompt="@Strings.SettingZoneLabelPrompt">
+            <settingConfig type="alphaNumeric" maxLength="3"/>
+        </setting>
+
+    </group>
+
+    <group id="alwaysOn" title="@Strings.GroupAlwaysOn" description="@Strings.GroupAlwaysOnDesc">
+
+        <setting propertyKey="@Properties.alwaysOn" title="@Strings.SettingAlwaysOn">
+            <settingConfig type="boolean"/>
+        </setting>
+
+        <setting propertyKey="@Properties.alwaysOnSeconds" title="@Strings.SettingAlwaysOnSeconds">
+            <settingConfig type="boolean"/>
+        </setting>
+
+    </group>
+
+    <group id="branding" title="@Strings.GroupMark" description="@Strings.GroupMarkDesc">
+
+        <setting propertyKey="@Properties.showMark" title="@Strings.SettingShowMark">
+            <settingConfig type="boolean"/>
+        </setting>
+
+        <setting propertyKey="@Properties.markText" title="@Strings.SettingMarkText"
+                 prompt="@Strings.SettingMarkTextPrompt">
+            <settingConfig type="alphaNumeric" maxLength="10"/>
+        </setting>
+
+    </group>
+
+</settings>

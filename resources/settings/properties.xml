@@ -1,0 +1,32 @@
+<properties>
+
+    <!--
+        Phone-owned settings. Everything the on-device editor's fixed schema cannot
+        express lives here: the editor handles style, accent colour, the six slots
+        and the data colour, and nothing else.
+
+        12/24-hour and units are deliberately absent. The watch already owns those,
+        and a face that disagrees with the rest of the watch is a bug report waiting
+        to happen.
+    -->
+
+    <!-- Screen background. Dark only: the data colour comes from the on-device
+         editor and defaults to white, so a light background could hide the face. -->
+    <property id="backgroundColor" type="number">0</property>
+
+    <!-- Seconds trailing the main readout, high-power mode only -->
+    <property id="showSeconds" type="boolean">false</property>
+
+    <!-- Always-on behaviour. Read in Phase 5. -->
+    <property id="alwaysOn" type="boolean">true</property>
+    <property id="alwaysOnSeconds" type="boolean">false</property>
+
+    <!-- Second time. Minutes from UTC, so the :30 and :45 zones work. -->
+    <property id="secondTimeOffset" type="number">0</property>
+    <property id="secondTimeLabel" type="string">Z</property>
+
+    <!-- The branding mark -->
+    <property id="showMark" type="boolean">true</property>
+    <property id="markText" type="string">RESCUE</property>
+
+</properties>

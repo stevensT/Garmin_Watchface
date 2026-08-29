@@ -3,7 +3,6 @@ import Toybox.Application.WatchFaceConfig;
 import Toybox.Complications;
 import Toybox.Graphics;
 import Toybox.Lang;
-import Toybox.Math;
 import Toybox.System;
 import Toybox.WatchUi;
 
@@ -61,6 +60,7 @@ class RescueFaceView extends WatchUi.WatchFace {
     //! Load resources for the watch face
     //! @param dc The drawing context
     function onLayout(dc as Dc) as Void {
+        Config.reload();
         buildSlots(dc);
 
         var settings = WatchFaceConfig.getSettings(null);
@@ -271,7 +271,7 @@ class RescueFaceView extends WatchUi.WatchFace {
 
             var currentValue = complication.value;
             if (currentValue != null) {
-                value = formatValue(currentValue, complication.unit);
+                value = Units.format(currentValue, complication.unit);
             }
         } catch (ex) {
             // The complication is unsupported on this device, has no data, or its
@@ -282,32 +282,6 @@ class RescueFaceView extends WatchUi.WatchFace {
         return drawable.setContent(label, value);
     }
 
-    //! Turn a complication's raw value into something that fits a slot.
-    //!
-    //! Numeric complications arrive unrounded - temperature reads 10.000000 and
-    //! altitude 4057.690430 - so they are rounded to whole units. `unit` is a
-    //! string for some complications ("%") and an enum code for others (3, 5), so
-    //! only the string form is appended. Phase 4 handles the coded units, which
-    //! need the metric/statute setting to mean anything.
-    //! @param value The complication's value
-    //! @param unit The complication's unit, if it has one
-    //! @return The text to draw
-    private function formatValue(value as Object, unit as Object?) as String {
-        var text;
-
-        if ((value instanceof Lang.Float) || (value instanceof Lang.Double)) {
-            text = Math.round(value as Double).toNumber().toString();
-        } else {
-            text = value.toString();
-        }
-
-        if (unit instanceof Lang.String) {
-            text += unit;
-        }
-
-        return text;
-    }
-
     //! Draw the watch face
     //! @param dc The drawing context
     function onUpdate(dc as Dc) as Void {
@@ -315,14 +289,17 @@ class RescueFaceView extends WatchUi.WatchFace {
         var height = dc.getHeight();
         var clockTime = System.getClockTime();
 
-        dc.setColor(Graphics.COLOR_TRANSPARENT, _theme.background);
+        dc.setColor(Graphics.COLOR_TRANSPARENT, Config.backgroundColor());
         dc.clear();
 
         drawTime(dc, width, height, clockTime);
         SecondTime.draw(dc, width, height, _style, _theme.data,
-            SecondTime.DEFAULT_OFFSET, SecondTime.DEFAULT_LABEL);
+            Config.secondTimeOffset(), Config.secondTimeLabel());
         drawSlots(dc);
-        drawRescueMark(dc, width, height);
+
+        if (Config.showMark()) {
+            drawRescueMark(dc, width, height);
+        }
     }
 
     //! Draw the slots the current style shows
@@ -373,33 +350,60 @@ class RescueFaceView extends WatchUi.WatchFace {
         var text = Lang.format("$1$:$2$", [hourText, clockTime.min.format("%02d")]);
         var centerY = (height * Layout.TIME_Y).toNumber();
 
+        // Seconds are a high-power luxury. Phase 5 decides what, if anything, the
+        // dimmed render can afford.
+        var seconds = null;
+        if (Config.showSeconds() && !_lowPower) {
+            seconds = clockTime.sec.format("%02d");
+        }
+
         dc.setColor(_theme.accent, Graphics.COLOR_TRANSPARENT);
         dc.drawText(width / 2, centerY, Graphics.FONT_NUMBER_THAI_HOT, text,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-        if (meridiem != null) {
-            drawMeridiem(dc, width, centerY, text, meridiem);
-        }
+        drawTrailing(dc, width, centerY, text, meridiem, seconds);
     }
 
-    //! Draw the AM/PM label hanging off the right of the numerals.
+    //! Draw the small labels hanging off the right of the numerals.
     //!
-    //! The numerals stay centred on the screen and this label sits outside them, so
-    //! switching between 12- and 24-hour never moves the main time readout.
+    //! The numerals stay centred on the screen and these sit outside them, so
+    //! nothing about the main readout moves when the 12/24-hour setting or the
+    //! seconds toggle changes.
+    //!
+    //! Both labels want the same corner. Seconds take the lower line, level with
+    //! the numerals' baseline, and AM/PM stacks above them; with only one of the
+    //! two in play it takes the lower line on its own.
     //! @param dc The drawing context
     //! @param width Screen width
     //! @param centerY Vertical centre of the numerals
     //! @param timeText The already-formatted time, needed to measure its width
-    //! @param meridiem "AM" or "PM"
-    private function drawMeridiem(dc as Dc, width as Number, centerY as Number,
-                                  timeText as String, meridiem as String) as Void {
+    //! @param meridiem "AM", "PM", or null in 24-hour mode
+    //! @param seconds The seconds, or null when they are off
+    private function drawTrailing(dc as Dc, width as Number, centerY as Number,
+                                  timeText as String, meridiem as String?,
+                                  seconds as String?) as Void {
+        if ((meridiem == null) && (seconds == null)) {
+            return;
+        }
+
         var timeDims = dc.getTextDimensions(timeText, Graphics.FONT_NUMBER_THAI_HOT);
         var x = (width / 2) + (timeDims[0] / 2) + (width * _MERIDIEM_GAP);
-        var y = centerY + (timeDims[1] / 2) - (timeDims[1] * _MERIDIEM_RISE);
+        var lowerY = centerY + (timeDims[1] / 2) - (timeDims[1] * _MERIDIEM_RISE);
 
         dc.setColor(_theme.muted, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, y, Graphics.FONT_XTINY, meridiem,
-            Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        if (seconds != null) {
+            dc.drawText(x, lowerY, Graphics.FONT_XTINY, seconds,
+                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
+
+        if (meridiem != null) {
+            var y = (seconds != null)
+                ? lowerY - dc.getFontHeight(Graphics.FONT_XTINY)
+                : lowerY;
+            dc.drawText(x, y, Graphics.FONT_XTINY, meridiem,
+                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
     }
 
     //! Draw the small branding mark
@@ -407,7 +411,7 @@ class RescueFaceView extends WatchUi.WatchFace {
     //! @param width Screen width
     //! @param height Screen height
     private function drawRescueMark(dc as Dc, width as Number, height as Number) as Void {
-        var text = Application.loadResource(Rez.Strings.RescueMark) as String;
+        var text = Config.markText();
 
         dc.setColor(_theme.muted, Graphics.COLOR_TRANSPARENT);
         dc.drawText(width / 2, (height * Layout.markY(_style)).toNumber(), Graphics.FONT_XTINY, text,

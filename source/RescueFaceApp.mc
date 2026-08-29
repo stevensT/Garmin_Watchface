@@ -37,8 +37,10 @@ class RescueFaceApp extends Application.AppBase {
         return [ view ];
     }
 
-    //! New settings arrived from the Garmin Connect app, so repaint
+    //! New settings arrived from the Garmin Connect app. `Config` holds them
+    //! cached, so it has to re-read them before the repaint can show anything.
     function onSettingsChanged() as Void {
+        Config.reload();
         WatchUi.requestUpdate();
     }
 }
