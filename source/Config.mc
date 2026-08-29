@@ -22,7 +22,6 @@ module Config {
     const SLOT_ICONS_DEFAULT = true;
     const STATUS_ICONS_DEFAULT = true;
     const ALWAYS_ON_DEFAULT = true;
-    const ALWAYS_ON_SECONDS_DEFAULT = false;
     const SECOND_TIME_OFFSET_DEFAULT = 0;
     const SECOND_TIME_LABEL_DEFAULT = "Z";
     const SHOW_MARK_DEFAULT = true;
@@ -45,7 +44,6 @@ module Config {
     var _slotIcons as Boolean = SLOT_ICONS_DEFAULT;
     var _statusIcons as Boolean = STATUS_ICONS_DEFAULT;
     var _alwaysOn as Boolean = ALWAYS_ON_DEFAULT;
-    var _alwaysOnSeconds as Boolean = ALWAYS_ON_SECONDS_DEFAULT;
     var _secondTimeOffset as Number = SECOND_TIME_OFFSET_DEFAULT;
     var _secondTimeLabel as String = SECOND_TIME_LABEL_DEFAULT;
     var _showMark as Boolean = SHOW_MARK_DEFAULT;
@@ -63,7 +61,6 @@ module Config {
         _arcMetric = ((arc == BottomArc.OFF) || (arc == BottomArc.BATTERY)
             || (arc == BottomArc.STEPS)) ? arc : ARC_METRIC_DEFAULT;
         _alwaysOn = booleanFor("alwaysOn", ALWAYS_ON_DEFAULT);
-        _alwaysOnSeconds = booleanFor("alwaysOnSeconds", ALWAYS_ON_SECONDS_DEFAULT);
         _secondTimeLabel = stringFor("secondTimeLabel", SECOND_TIME_LABEL_DEFAULT);
         _showMark = booleanFor("showMark", SHOW_MARK_DEFAULT);
         _markText = markFor(numberFor("markPreset", MARK_RESCUE));
@@ -112,12 +109,6 @@ module Config {
     //! @return true if always-on is wanted
     function alwaysOn() as Boolean {
         return _alwaysOn;
-    }
-
-    //! Whether the always-on render includes seconds
-    //! @return true if dimmed seconds are wanted
-    function alwaysOnSeconds() as Boolean {
-        return _alwaysOnSeconds;
     }
 
     //! Offset of the second-time readout from UTC

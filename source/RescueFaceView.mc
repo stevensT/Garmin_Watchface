@@ -324,6 +324,12 @@ class RescueFaceView extends WatchUi.WatchFace {
         var height = dc.getHeight();
         var clockTime = System.getClockTime();
 
+        if (_lowPower) {
+            LowPowerRenderer.draw(dc, width, height, _theme, timeFont(), _style,
+                clockTime);
+            return;
+        }
+
         dc.setColor(Graphics.COLOR_TRANSPARENT, Config.backgroundColor());
         dc.clear();
 

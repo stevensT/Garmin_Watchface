@@ -48,7 +48,6 @@
     <string id="GroupAlwaysOn">Always on</string>
     <string id="GroupAlwaysOnDesc">What the face shows while the screen is dimmed.</string>
     <string id="SettingAlwaysOn">Always-on display</string>
-    <string id="SettingAlwaysOnSeconds">Seconds while dimmed</string>
 
     <!-- Phone settings: branding mark -->
     <string id="GroupMark">Mark</string>

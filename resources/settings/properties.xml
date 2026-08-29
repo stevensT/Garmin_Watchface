@@ -26,9 +26,12 @@
     <!-- Bluetooth, wifi, LTE and notifications, left of the time -->
     <property id="statusIcons" type="boolean">true</property>
 
-    <!-- Always-on behaviour. Read in Phase 5. -->
+    <!--
+        Always-on behaviour. There is no companion "seconds while dimmed" switch:
+        this device has no onPartialUpdate at all, and the face is redrawn once a
+        minute while idle, so a seconds readout would sit frozen on a stale number.
+    -->
     <property id="alwaysOn" type="boolean">true</property>
-    <property id="alwaysOnSeconds" type="boolean">false</property>
 
     <!-- Second time. Minutes from UTC, so the :30 and :45 zones work. -->
     <property id="secondTimeOffset" type="number">0</property>

@@ -55,10 +55,6 @@
             <settingConfig type="boolean"/>
         </setting>
 
-        <setting propertyKey="@Properties.alwaysOnSeconds" title="@Strings.SettingAlwaysOnSeconds">
-            <settingConfig type="boolean"/>
-        </setting>
-
     </group>
 
     <group id="branding" title="@Strings.GroupMark" description="@Strings.GroupMarkDesc">
