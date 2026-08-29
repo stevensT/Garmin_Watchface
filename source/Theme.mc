@@ -17,7 +17,9 @@ class Theme {
     //! beside the time
     public var muted as Number = MUTED_DEFAULT;
 
-    public static const ACCENT_DEFAULT = 0xFF4030;
+    //! Matches the accent list's default entry in the config resource, so a device
+    //! with no on-device editor wears the same colour as one with it.
+    public static const ACCENT_DEFAULT = 0x00E676;
     public static const DATA_DEFAULT = Graphics.COLOR_WHITE;
     public static const MUTED_DEFAULT = 0x808080;
 

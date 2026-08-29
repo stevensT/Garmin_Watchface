@@ -7,8 +7,21 @@
             <style id="2" label="@Strings.StyleFull"/>
         </styles>
 
-        <!-- Colour of the main HH:MM readout. Free choice from the on-watch picker. -->
-        <accentColors allowAny="true"/>
+        <!--
+            Colour of the main HH:MM readout, chosen on the watch.
+
+            A list rather than `allowAny`, because allowAny costs the default: the
+            system picks its own starting colour for a free picker, and it picked
+            white, so the face's own default never got a look in. A list can mark
+            one entry `default="true"` and that is the colour a new install wears.
+        -->
+        <accentColors>
+            <color label="@Strings.ColorGreen" default="true">0x00E676</color>
+            <color label="@Strings.ColorWhite">0xFFFFFF</color>
+            <color label="@Strings.ColorAmber">0xFFAA00</color>
+            <color label="@Strings.ColorRed">0xFF4030</color>
+            <color label="@Strings.ColorBlue">0x00AAFF</color>
+        </accentColors>
 
         <!--
             The six data slots. Ids 1-6 come back as `uniqueIdentifier` in

@@ -1,3 +1,4 @@
+import Toybox.Graphics;
 import Toybox.Lang;
 
 //! Where things sit on the face.
@@ -16,18 +17,34 @@ module Layout {
     //! the anchor everything else is arranged around.
     const TIME_Y = 0.44;
 
+    //! Font of the main readout.
+    //!
+    //! Not the largest one available. FONT_NUMBER_THAI_HOT draws "17:49" at
+    //! 363x210 on a 454 px screen, which leaves nothing either side of it: the
+    //! seconds ended up pinned against the bezel and the second-time line had to
+    //! start before the numerals' box had finished. FONT_NUMBER_HOT is 297x173 and
+    //! still reads as the largest thing on the face by a distance.
+    const TIME_FONT = Graphics.FONT_NUMBER_HOT;
+
+    //! Font of the second-time line. Larger than a slot value, so it still reads
+    //! as a headline, but no longer competing with the main readout.
+    const SECOND_TIME_FONT = Graphics.FONT_SMALL;
+
     // Minimal: one slot above the time, nothing below it but the second time and
-    // the mark, both where they have always sat.
-    const MINIMAL_ZULU_Y = 0.64;
+    // the mark. Nothing competes for the lower half, so the second time gets to
+    // sit where it falls naturally rather than where it fits.
+    const MINIMAL_ZULU_Y = 0.645;
     const MINIMAL_MARK_Y = 0.82;
     const MINIMAL_TOP_ROW_Y = 0.20;
 
-    // Full: two rows of three. The bottom row has to fit between the second time
-    // and the mark, so both of those move to clear it.
-    const FULL_ZULU_Y = 0.60;
+    // Full: two rows of three. Every line below the numerals is placed against the
+    // one under it. At 454 px the numerals' baseline lands at 238, the second time
+    // then occupies 252-305, and the bottom row starts at 312 — the gaps are single
+    // digits, so these four numbers are not as free as they look.
+    const FULL_ZULU_Y = 0.615;
     const FULL_MARK_Y = 0.925;
     const FULL_TOP_ROW_Y = 0.20;
-    const FULL_BOTTOM_ROW_Y = 0.775;
+    const FULL_BOTTOM_ROW_Y = 0.785;
 
     //! Horizontal distance from the centre column to a side column. The top row is
     //! tighter because the round screen has less chord to work with up there.

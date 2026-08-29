@@ -358,7 +358,7 @@ class RescueFaceView extends WatchUi.WatchFace {
         }
 
         dc.setColor(_theme.accent, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width / 2, centerY, Graphics.FONT_NUMBER_THAI_HOT, text,
+        dc.drawText(width / 2, centerY, Layout.TIME_FONT, text,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         drawTrailing(dc, width, centerY, text, meridiem, seconds);
@@ -386,7 +386,7 @@ class RescueFaceView extends WatchUi.WatchFace {
             return;
         }
 
-        var timeDims = dc.getTextDimensions(timeText, Graphics.FONT_NUMBER_THAI_HOT);
+        var timeDims = dc.getTextDimensions(timeText, Layout.TIME_FONT);
         var x = (width / 2) + (timeDims[0] / 2) + (width * _MERIDIEM_GAP);
         var lowerY = centerY + (timeDims[1] / 2) - (timeDims[1] * _MERIDIEM_RISE);
 

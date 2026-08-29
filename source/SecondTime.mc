@@ -49,7 +49,7 @@ module SecondTime {
                   label as String) as Void {
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
         dc.drawText(width / 2, (height * Layout.zuluY(style)).toNumber(),
-            Graphics.FONT_MEDIUM, text(offsetSeconds, label),
+            Layout.SECOND_TIME_FONT, text(offsetSeconds, label),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 }

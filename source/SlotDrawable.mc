@@ -39,13 +39,32 @@ class SlotDrawable extends WatchUi.Drawable {
     //! @param value The complication's value, already formatted
     //! @return true if the drawn text changed
     function setContent(label as String, value as String) as Boolean {
-        if (_label.equals(label) && _value.equals(value)) {
+        var shown = duplicates(label, value) ? "" : label;
+
+        if (_label.equals(shown) && _value.equals(value)) {
             return false;
         }
 
-        _label = label;
+        _label = shown;
         _value = value;
         return true;
+    }
+
+    //! Whether a label only repeats what the value already says.
+    //!
+    //! Garmin labels the date complication "AUG" over a value of "Aug 28", and the
+    //! weekday one "FRI" over "Fri 28". Drawing both spends a line of the slot on
+    //! nothing. The test is a prefix rather than a substring so that a label like
+    //! "HR" survives a value of "8HR".
+    //! @param label The complication's label
+    //! @param value The formatted value
+    //! @return true if the label adds nothing
+    private function duplicates(label as String, value as String) as Boolean {
+        if (label.length() == 0) {
+            return false;
+        }
+
+        return value.toUpper().find(label.toUpper()) == 0;
     }
 
     //! Set the drawing colours
