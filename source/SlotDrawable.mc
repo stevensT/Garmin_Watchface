@@ -2,7 +2,7 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 
-//! One data slot: a muted label with its value underneath.
+//! One data slot: a value with its name underneath, smaller and muted.
 //!
 //! This is a `Drawable` rather than plain drawing code because the on-device
 //! editor asks for a `ComplicationDrawableRef` when the user selects a slot, and
@@ -83,17 +83,22 @@ class SlotDrawable extends WatchUi.Drawable {
         }
 
         var centerX = locX + (width / 2);
-        var labelHeight = dc.getFontHeight(Graphics.FONT_XTINY);
-
-        dc.setColor(_labelColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, locY, Graphics.FONT_XTINY, _label,
-            Graphics.TEXT_JUSTIFY_CENTER);
-
         var fitted = fit(dc);
 
+        // The value's band is the height of FONT_TINY whatever font the value
+        // ended up in, and the value is centred inside it. Otherwise a slot that
+        // had to drop a size would pull its label up with it, and a row of slots
+        // would sit at ragged heights.
+        var band = dc.getFontHeight(Graphics.FONT_TINY);
+
         dc.setColor(_valueColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, locY + labelHeight, fitted[1] as Graphics.FontType,
-            fitted[0] as String, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(centerX, locY + (band / 2), fitted[1] as Graphics.FontType,
+            fitted[0] as String,
+            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        dc.setColor(_labelColor, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, locY + band, Graphics.FONT_XTINY, _label,
+            Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     //! What to draw for the value, and in what font, so it stays inside the slot.

@@ -13,18 +13,15 @@ import Toybox.Lang;
 //! and mark tighten up to make room. Minimal keeps the roomier spacing.
 module Layout {
 
-    //! Vertical centre of the main time readout. The same in both styles: it is
-    //! the anchor everything else is arranged around.
-    const TIME_Y = 0.44;
-
-    //! Font of the main readout.
+    //! Vertical centre of the main time readout's box. The same in both styles: it
+    //! is the anchor everything else is arranged around.
     //!
-    //! Not the largest one available. FONT_NUMBER_THAI_HOT draws "17:49" at
-    //! 363x210 on a 454 px screen, which leaves nothing either side of it: the
-    //! seconds ended up pinned against the bezel and the second-time line had to
-    //! start before the numerals' box had finished. FONT_NUMBER_HOT is 297x173 and
-    //! still reads as the largest thing on the face by a distance.
-    const TIME_FONT = Graphics.FONT_NUMBER_HOT;
+    //! Oswald sits low in its own box — its baseline is 140 px down a 174 px box,
+    //! where the system number fonts sit nearer the middle. Centring the box would
+    //! therefore push the digits down into the second time, so the anchor moved up
+    //! to compensate. The digits land at 142-243, which is 10 px below the upper
+    //! rule and 9 px above the second time.
+    const TIME_Y = 0.418;
 
     //! Font of the second-time line. Larger than a slot value, so it still reads
     //! as a headline, but no longer competing with the main readout.
@@ -47,6 +44,28 @@ module Layout {
     //! is already 157 px. Past this the mark is trimmed rather than allowed to run
     //! off the side of a round screen.
     const MARK_MAX_WIDTH = 0.39;
+
+    //! The two rules bracketing the time block: one between the top row and the
+    //! numerals, one below the second time.
+    //!
+    //! Bracketing the clock rather than separating every band is what the room
+    //! allows. Between the top row and the numerals there are eight pixels of
+    //! declared box, and the second time clears the row below it by nine, so these
+    //! lines sit close to what they divide — which is what a rule is for, but it
+    //! leaves no margin to spend on a third.
+    const RULE_UPPER_Y = 0.295;
+    const MINIMAL_RULE_LOWER_Y = 0.75;
+    const FULL_RULE_LOWER_Y = 0.681;
+
+    //! How far a rule reaches across the face
+    const RULE_WIDTH = 0.62;
+
+    //! Vertical position of the rule below the second time
+    //! @param style The layout style
+    //! @return The position as a fraction of screen height
+    function ruleLowerY(style as Styles.Id) as Float {
+        return (style == Styles.FULL) ? FULL_RULE_LOWER_Y : MINIMAL_RULE_LOWER_Y;
+    }
 
     // Minimal: one slot above the time, nothing below it but the second time.
     // Nothing competes for the lower half, so the second time gets to sit where it

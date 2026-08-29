@@ -28,6 +28,9 @@ class RescueFaceView extends WatchUi.WatchFace {
 
     //! Layout preset from the editor
     private var _style as Styles.Id = Styles.MINIMAL;
+    //! The numerals' face, a bundled bitmap font. Loaded once at layout: a font
+    //! resource is a real allocation, not a constant.
+    private var _timeFont as WatchUi.FontResource?;
     //! One drawable per slot, indexed by slot id - 1
     private var _slots as Array<SlotDrawable> = [];
     //! The complication each slot shows, indexed by slot id - 1
@@ -61,6 +64,7 @@ class RescueFaceView extends WatchUi.WatchFace {
     //! @param dc The drawing context
     function onLayout(dc as Dc) as Void {
         Config.reload();
+        _timeFont = Application.loadResource(Rez.Fonts.TimeNumbers) as WatchUi.FontResource;
         buildSlots(dc);
 
         var settings = WatchFaceConfig.getSettings(null);
@@ -292,6 +296,7 @@ class RescueFaceView extends WatchUi.WatchFace {
         dc.setColor(Graphics.COLOR_TRANSPARENT, Config.backgroundColor());
         dc.clear();
 
+        drawRules(dc, width, height);
         drawTime(dc, width, height, clockTime);
         SecondTime.draw(dc, width, height, _style, _theme.data,
             Config.secondTimeOffset(), Config.secondTimeLabel());
@@ -303,6 +308,36 @@ class RescueFaceView extends WatchUi.WatchFace {
         if (Config.showMark()) {
             drawMark(dc, width, height);
         }
+    }
+
+    //! The numerals' font, falling back to a system face if the resource failed to
+    //! load. A watch face that cannot tell the time is worse than one drawn wrong.
+    //! @return The font to draw the numerals in
+    private function timeFont() as Graphics.FontType {
+        var font = _timeFont;
+        return (font != null) ? font : Graphics.FONT_NUMBER_HOT;
+    }
+
+    //! Draw the pair of rules bracketing the time block.
+    //!
+    //! Dim rather than muted: these are for grouping, and a divider that competes
+    //! with the data it divides has failed at its job.
+    //! @param dc The drawing context
+    //! @param width Screen width
+    //! @param height Screen height
+    private function drawRules(dc as Dc, width as Number, height as Number) as Void {
+        var half = (width * Layout.RULE_WIDTH) / 2;
+        var left = (width / 2) - half;
+        var right = (width / 2) + half;
+
+        dc.setColor(Theme.dim(_theme.muted), Graphics.COLOR_TRANSPARENT);
+        dc.setPenWidth(1);
+
+        var upper = (height * Layout.RULE_UPPER_Y).toNumber();
+        dc.drawLine(left, upper, right, upper);
+
+        var lower = (height * Layout.ruleLowerY(_style)).toNumber();
+        dc.drawLine(left, lower, right, lower);
     }
 
     //! Draw the slots the current style shows
@@ -361,7 +396,7 @@ class RescueFaceView extends WatchUi.WatchFace {
         }
 
         dc.setColor(_theme.accent, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width / 2, centerY, Layout.TIME_FONT, text,
+        dc.drawText(width / 2, centerY, timeFont(), text,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         drawTrailing(dc, width, centerY, text, meridiem, seconds);
@@ -389,7 +424,7 @@ class RescueFaceView extends WatchUi.WatchFace {
             return;
         }
 
-        var timeDims = dc.getTextDimensions(timeText, Layout.TIME_FONT);
+        var timeDims = dc.getTextDimensions(timeText, timeFont());
         var x = (width / 2) + (timeDims[0] / 2) + (width * _MERIDIEM_GAP);
         var lowerY = centerY + (timeDims[1] / 2) - (timeDims[1] * _MERIDIEM_RISE);
 
