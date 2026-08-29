@@ -7,17 +7,45 @@ and the `<font>` resource takes a `filter` attribute — a watch face needs only
 `0123456789:`, so the atlas holds eleven glyphs instead of a full character set.
 That is the difference between 12 kB and something that would not be worth doing.
 
-## Reproducing the bundled font
+## Reproducing the bundled fonts
 
 ```sh
 npm install @napi-rs/canvas
 curl -L -o Oswald.ttf \
   "https://github.com/google/fonts/raw/main/ofl/oswald/Oswald%5Bwght%5D.ttf"
-node bmfont.js Oswald.ttf Oswald bold 117 ../../resources/fonts time_numbers
+
+# The numerals, one atlas per screen size.
+node bmfont.js Oswald.ttf Oswald bold 117 ../../resources/fonts        time_numbers
+node bmfont.js Oswald.ttf Oswald bold 107 ../../resources-416x416/fonts time_numbers
+
+# The gauge readout.
+CHARS='0123456789%' \
+  node bmfont.js Oswald.ttf Oswald bold 19 ../../resources/fonts arc_value
+
+# The slot labels, uppercase only, tracked out a pixel.
+export CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/ -+.'
+TRACKING=1 node bmfont.js Oswald.ttf Oswald 500 23 ../../resources/fonts         slot_label
+TRACKING=1 node bmfont.js Oswald.ttf Oswald 500 21 ../../resources-416x416/fonts slot_label
 ```
 
-Oswald ships only as a variable font, so it is rasterised at bold from the
-variable file rather than from a drawn Bold instance.
+Oswald ships only as a variable font, so it is rasterised from the variable file
+at a weight rather than from a drawn instance. The numerals take `bold`; the
+labels take `500`, because at 23 px a bold condensed cap is a blob.
+
+`Oswald.ttf` and `node_modules/` are gitignored — fetch them when you need to
+regenerate, and note that **the atlases for the two screen sizes have to be
+regenerated together or they drift.**
+
+## Two knobs
+
+- **`CHARS`** — which glyphs land in the atlas. This is the whole economy of the
+  thing: the numerals need eleven, the labels 41, and a full character set would
+  cost more than the face can spend. Whatever you set here must match the
+  `filter` attribute on the `<font>` in `fonts.xml`, or the resource compiler and
+  the atlas disagree about what exists.
+- **`TRACKING`** — pixels added to every glyph's advance. A condensed face set in
+  all caps at label size sets too tightly to read at a glance; a pixel opens it
+  up. Digits in a time readout want none, so it defaults to 0.
 
 ## Choosing a size
 

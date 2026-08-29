@@ -69,6 +69,8 @@ class RescueFaceView extends WatchUi.WatchFace {
     function onLayout(dc as Dc) as Void {
         Config.reload();
         _timeFont = Application.loadResource(Rez.Fonts.TimeNumbers) as WatchUi.FontResource;
+        SlotDrawable.labelFont = Application.loadResource(Rez.Fonts.SlotLabel)
+            as WatchUi.FontResource;
         buildSlots(dc);
 
         var settings = WatchFaceConfig.getSettings(null);
@@ -91,9 +93,10 @@ class RescueFaceView extends WatchUi.WatchFace {
         _screenHeight = dc.getHeight();
 
         // A slot draws a label with its value underneath. Measure that rather than
-        // assume it: a box shorter than the text overflows onto the RESCUE mark.
-        _slotContentHeight = dc.getFontHeight(Graphics.FONT_XTINY)
-            + dc.getFontHeight(Graphics.FONT_TINY);
+        // assume it: a box shorter than the text overflows onto the RESCUE mark,
+        // and the label's face is a bundled bitmap font whose line box is nothing
+        // like the system font's.
+        _slotContentHeight = SlotDrawable.contentHeight(dc);
 
         _slots = new Array<SlotDrawable>[Slots.COUNT];
         _slotIds = new Array<Complications.Id?>[Slots.COUNT];
@@ -288,7 +291,12 @@ class RescueFaceView extends WatchUi.WatchFace {
         try {
             var complication = Complications.getComplication(complicationId);
 
-            var shortLabel = complication.shortLabel;
+            // Our own short name first, for the types Garmin names in prose, then
+            // whatever it published. See SlotLabels for why the table exists.
+            var shortLabel = SlotLabels.forType(complicationId.getType());
+            if (shortLabel == null) {
+                shortLabel = complication.shortLabel;
+            }
             if (shortLabel == null) {
                 shortLabel = complication.longLabel;
             }

@@ -13,4 +13,13 @@
         Same Oswald, same SIL Open Font License — see resources/fonts/OFL.txt.
     -->
     <font id="TimeNumbers" filename="time_numbers.fnt" filter="0123456789:"/>
+
+    <!--
+        The slot labels for the 416x416 face, for the same reason: the same Oswald
+        at 21 rather than 23. A label that did not shrink with the screen would eat
+        the room the row needs, and the fitting ladder would start trimming names
+        that fit perfectly well on the 454.
+    -->
+    <font id="SlotLabel" filename="slot_label.fnt"
+          filter="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/ -+."/>
 </resources>

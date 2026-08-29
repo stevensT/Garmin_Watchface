@@ -19,6 +19,17 @@ class SlotDrawable extends WatchUi.Drawable {
     private var _valueColor as Graphics.ColorType = Graphics.COLOR_WHITE;
     private var _labelColor as Graphics.ColorType = Graphics.COLOR_LT_GRAY;
 
+    //! The bundled condensed face labels are set in, shared by every slot and
+    //! loaded once by the view. Null only if the resource failed to load, in which
+    //! case labels fall back to FONT_XTINY — a slot with an unnamed value is worse
+    //! than one named in the wrong face.
+    static var labelFont as Graphics.FontType?;
+
+    //! Gap between the value's band and the top of the label's line. The value
+    //! sits in a band the height of FONT_TINY whatever font it ended up in, so
+    //! without this the label crowds whatever the value's descender space leaves.
+    static const LABEL_GAP = 2;
+
     //! Constructor
     //! @param options Standard drawable options; locX/locY are the top left corner
     function initialize(options as {
@@ -40,7 +51,10 @@ class SlotDrawable extends WatchUi.Drawable {
     //! @param value The complication's value, already formatted
     //! @return true if the drawn text changed
     function setContent(label as String, value as String) as Boolean {
-        var shown = duplicates(label, value) ? "" : label;
+        // Uppercased because the label face is an uppercase atlas — a lowercase
+        // character would simply not draw. Garmin's own short labels are already
+        // caps; the handful that are not ("Stress", "Sleep") join them.
+        var shown = duplicates(label, value) ? "" : label.toUpper();
 
         if (_label.equals(shown) && _value.equals(value)) {
             return false;
@@ -103,19 +117,78 @@ class SlotDrawable extends WatchUi.Drawable {
             fitted[0] as String,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
+        var lineTop = locY + band + LABEL_GAP;
+
         var icon = _icon;
         if (icon != null) {
             // Centred in the label's line rather than sitting on top of it, since
             // an icon's height varies with its shape while a line of text does not.
-            var labelHeight = dc.getFontHeight(Graphics.FONT_XTINY);
+            var labelHeight = dc.getFontHeight(labelFace());
             dc.drawBitmap(centerX - (icon.getWidth() / 2),
-                locY + band + ((labelHeight - icon.getHeight()) / 2), icon);
+                lineTop + ((labelHeight - icon.getHeight()) / 2), icon);
             return;
         }
 
         dc.setColor(_labelColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, locY + band, Graphics.FONT_XTINY, _label,
+        dc.drawText(centerX, lineTop, labelFace(), fitLabel(dc),
             Graphics.TEXT_JUSTIFY_CENTER);
+    }
+
+    //! The face labels are set in, falling back to the smallest system font if the
+    //! bundled resource never loaded.
+    //! @return The label font
+    static function labelFace() as Graphics.FontType {
+        var font = labelFont;
+        return (font != null) ? font : Graphics.FONT_XTINY;
+    }
+
+    //! How tall a slot's label-over-value stack is, which is what `Layout` needs to
+    //! place the box. Measured rather than assumed: the label face is a bundled
+    //! bitmap font whose line box is nothing like FONT_XTINY's.
+    //! @param dc The drawing context
+    //! @return The content height
+    static function contentHeight(dc as Dc) as Number {
+        return dc.getFontHeight(Graphics.FONT_TINY) + LABEL_GAP
+            + dc.getFontHeight(labelFace());
+    }
+
+    //! What to draw for the label, so it stays inside the slot.
+    //!
+    //! `SlotLabels` has already replaced the names Garmin publishes as prose, so
+    //! by here a label is short and this rarely does anything. It still has to
+    //! exist: a third-party complication can publish any label it likes, and a
+    //! label drawn centred and unclamped runs off both sides of the slot and gets
+    //! cut by the round screen rather than simply looking wrong.
+    //!
+    //! The first word is usually the distinguishing one, so that is tried before
+    //! characters go. A clipped name is only ever an ugly name, where a clipped
+    //! value would be a wrong number — which is why this ladder gives up less
+    //! carefully than `fit` does.
+    //! @param dc The drawing context
+    //! @return The label, trimmed to the slot
+    private function fitLabel(dc as Dc) as String {
+        var face = labelFace();
+
+        if (dc.getTextWidthInPixels(_label, face) <= width) {
+            return _label;
+        }
+
+        var text = firstWord(_label);
+
+        while ((text.length() > 1)
+                && (dc.getTextWidthInPixels(text, face) > width)) {
+            text = text.substring(0, text.length() - 1) as String;
+        }
+
+        return text;
+    }
+
+    //! The first word of a label, or the whole thing if it is one word.
+    //! @param text The label
+    //! @return The first word
+    private function firstWord(text as String) as String {
+        var space = text.find(" ");
+        return (space != null) ? text.substring(0, space) as String : text;
     }
 
     //! What to draw for the value, and in what font, so it stays inside the slot.

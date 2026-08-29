@@ -15,3 +15,9 @@ bin/
 Thumbs.db
 CLAUDE.md
 tasks/todo.md
+
+# Font toolchain deps — the README tells you to npm install here.
+node_modules/
+package-lock.json
+tools/fontgen/Oswald.ttf
+tools/fontgen/package.json

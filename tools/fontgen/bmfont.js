@@ -10,6 +10,12 @@ const { createCanvas, GlobalFonts } = require('@napi-rs/canvas');
 
 const CHARS = process.env.CHARS || '0123456789:';
 const PAD = 8;
+// Extra pixels added to every glyph's advance. A condensed face set in all caps
+// at label size sets too tightly to read at a glance on a watch; a pixel or two
+// of tracking is the difference between "STEPS" and "S T E P S" being legible
+// and being a smudge. Digits in a time readout want none of this, so it defaults
+// to zero and the caller opts in.
+const TRACKING = parseInt(process.env.TRACKING || '0', 10);
 
 function generate(ttfPath, family, weight, size, outDir, outName) {
   GlobalFonts.registerFromPath(ttfPath, family);
@@ -92,7 +98,7 @@ function generate(ttfPath, family, weight, size, outDir, outName) {
   for (const g of glyphs) {
     lines.push(
       `char id=${g.ch.charCodeAt(0)} x=${g.x} y=${g.y} width=${g.width} height=${g.height} ` +
-      `xoffset=${g.xoffset} yoffset=${g.yoffset} xadvance=${g.advance} page=0 chnl=15`
+      `xoffset=${g.xoffset} yoffset=${g.yoffset} xadvance=${g.advance + TRACKING} page=0 chnl=15`
     );
   }
   lines.push('kernings count=0');
@@ -100,7 +106,7 @@ function generate(ttfPath, family, weight, size, outDir, outName) {
 
   const digit = glyphs[0];
   console.log(`${outName}: size=${size} lineHeight=${lineHeight} base=${ascent} ` +
-    `atlas=${sheetW}x${sheetH} digitInk=${digit.width}x${digit.height} advance=${digit.advance} ` +
+    `atlas=${sheetW}x${sheetH} ink=${digit.width}x${digit.height} advance=${digit.advance}+${TRACKING} ` +
     `png=${fs.statSync(path.join(outDir, png)).size}B`);
 }
 

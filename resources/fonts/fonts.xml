@@ -15,4 +15,18 @@
         gauge wants to sit quieter than a slot value, so it gets its own face.
     -->
     <font id="ArcValue" filename="arc_value.fnt" filter="0123456789%"/>
+
+    <!--
+        Slot labels. FONT_XTINY sets a slot's name at nearly the size of its own
+        value, in a face wide enough that a real name like "Respiration Rate" was
+        never going to fit, so the labels get a condensed uppercase face of their
+        own — smaller than the value, tracked out a pixel so all caps still reads
+        at a glance.
+
+        Uppercase only, which is what keeps the atlas affordable: 41 glyphs rather
+        than the 70-odd a mixed-case set needs. Everything drawn through it is
+        uppercased first — see SlotDrawable.
+    -->
+    <font id="SlotLabel" filename="slot_label.fnt"
+          filter="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/ -+."/>
 </resources>

@@ -60,7 +60,7 @@ module Layout {
     //! lines sit close to what they divide — which is what a rule is for, but it
     //! leaves no margin to spend on a third.
     const RULE_UPPER_Y = 0.295;
-    const MINIMAL_RULE_LOWER_Y = 0.783;
+    const MINIMAL_RULE_LOWER_Y = 0.753;
     const FULL_RULE_LOWER_Y = 0.681;
 
     //! How far a rule reaches across the face
@@ -79,10 +79,14 @@ module Layout {
     // the second time sat tight under the numerals and left the rule dividing
     // nothing, with 66 px of empty face below it before the arc. The band between
     // the numerals' ink and the top of the arc is 161 px at 454, and the second
-    // time plus its rule is 62 of that, so the group is centred in the band with
-    // the 99 px left over split evenly above and below. The rule then sits 8 px
+    // time plus its rule is 62 of that, so 99 px of slack has to go somewhere.
+    //
+    // Splitting it evenly (0.705) is balanced arithmetically but reads as the
+    // second time having come loose from the numerals. It is split 36 above and
+    // 63 below instead, which looks even on screen because the arc already fills
+    // part of the lower band and nothing fills the upper one. The rule stays 8 px
     // under the second time, which is the same relationship Full uses.
-    const MINIMAL_ZULU_Y = 0.705;
+    const MINIMAL_ZULU_Y = 0.675;
     const MINIMAL_TOP_ROW_Y = 0.20;
 
     // Full: two rows of three. Every line below the numerals is placed against the
@@ -105,7 +109,16 @@ module Layout {
     //! Width of one slot. Three of these plus the gaps have to sit inside the
     //! chord at the top row, which is the narrowest line the slots use: at 454x454
     //! that chord is about 362 px against 313 px of slot.
-    const SLOT_WIDTH = 0.23;
+    //!
+    //! **This is a floor, not a free number.** The date complications set it: the
+    //! widest string they can produce is "May 10" at 104 px on the 454 and
+    //! "Wed 10" at 97 px on the 416, both measured at FONT_XTINY, which is the
+    //! smallest system font and so the last size a value can fall back to. Below
+    //! 0.2291 (454) or 0.2332 (416) the fitting ladder starts dropping characters
+    //! off a date, and "Aug 2" on the 29th is wrong rather than merely ugly.
+    //! 0.235 is the smallest value that clears both floors: 106 px on the 454
+    //! against 104, and 97 px on the 416 against 97 exactly.
+    const SLOT_WIDTH = 0.235;
 
     //! Vertical centre of the second-time line
     //! @param style The layout style
