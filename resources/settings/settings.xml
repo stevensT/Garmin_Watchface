@@ -14,6 +14,15 @@
             <settingConfig type="boolean"/>
         </setting>
 
+        <setting propertyKey="@Properties.arcMetric" title="@Strings.SettingArc"
+                 prompt="@Strings.SettingArcPrompt">
+            <settingConfig type="list">
+                <listEntry value="1">@Strings.ArcBattery</listEntry>
+                <listEntry value="2">@Strings.ArcSteps</listEntry>
+                <listEntry value="0">@Strings.ArcOff</listEntry>
+            </settingConfig>
+        </setting>
+
     </group>
 
     <group id="secondTime" title="@Strings.GroupSecondTime" description="@Strings.GroupSecondTimeDesc">
@@ -46,6 +55,14 @@
 
         <setting propertyKey="@Properties.showMark" title="@Strings.SettingShowMark">
             <settingConfig type="boolean"/>
+        </setting>
+
+        <setting propertyKey="@Properties.markPreset" title="@Strings.SettingMarkPreset">
+            <settingConfig type="list">
+                <listEntry value="0">@Strings.MarkRescue</listEntry>
+                <listEntry value="1">@Strings.MarkMountUp</listEntry>
+                <listEntry value="2">@Strings.MarkCustom</listEntry>
+            </settingConfig>
         </setting>
 
         <setting propertyKey="@Properties.markText" title="@Strings.SettingMarkText"

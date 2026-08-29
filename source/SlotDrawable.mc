@@ -89,9 +89,69 @@ class SlotDrawable extends WatchUi.Drawable {
         dc.drawText(centerX, locY, Graphics.FONT_XTINY, _label,
             Graphics.TEXT_JUSTIFY_CENTER);
 
+        var fitted = fit(dc);
+
         dc.setColor(_valueColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, locY + labelHeight, Graphics.FONT_TINY, _value,
-            Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(centerX, locY + labelHeight, fitted[1] as Graphics.FontType,
+            fitted[0] as String, Graphics.TEXT_JUSTIFY_CENTER);
+    }
+
+    //! What to draw for the value, and in what font, so it stays inside the slot.
+    //!
+    //! Values are not all short. Altitude in feet runs to five digits and a unit,
+    //! and "13313ft" is about 180 px at FONT_TINY against a slot barely 100 px
+    //! wide. The text is centred, so the overflow runs off both sides, and near
+    //! the rim the round screen cuts the end off the number — a clipped "3465ft"
+    //! reads as "3465f", which is a wrong number rather than an ugly one.
+    //!
+    //! Three things are tried in order, each giving up less than the next: a
+    //! smaller font, then the unit, then characters. Dropping "ft" from an
+    //! altitude costs nothing a reader misses, since the label already says ALT;
+    //! dropping a digit changes what the number means, so it comes last.
+    //! @param dc The drawing context
+    //! @return [text, font]
+    private function fit(dc as Dc) as Array {
+        if (dc.getTextWidthInPixels(_value, Graphics.FONT_TINY) <= width) {
+            return [_value, Graphics.FONT_TINY];
+        }
+
+        if (dc.getTextWidthInPixels(_value, Graphics.FONT_XTINY) <= width) {
+            return [_value, Graphics.FONT_XTINY];
+        }
+
+        var bare = withoutUnit(_value);
+        if (dc.getTextWidthInPixels(bare, Graphics.FONT_XTINY) <= width) {
+            return [bare, Graphics.FONT_XTINY];
+        }
+
+        // Nothing else left to give up.
+        while ((bare.length() > 1)
+                && (dc.getTextWidthInPixels(bare, Graphics.FONT_XTINY) > width)) {
+            bare = bare.substring(0, bare.length() - 1) as String;
+        }
+
+        return [bare, Graphics.FONT_XTINY];
+    }
+
+    //! A value with its trailing unit letters removed: "13313ft" becomes "13313".
+    //! Only letters go — "50%" and "61°" keep their marks, which are doing more
+    //! work than a unit name and cost two characters between them.
+    //! @param text The value
+    //! @return The value without its unit
+    private function withoutUnit(text as String) as String {
+        var end = text.length();
+
+        while (end > 0) {
+            var ch = text.substring(end - 1, end) as String;
+            if (!ch.equals(ch.toUpper()) || !ch.equals(ch.toLower())) {
+                // The case forms differ, so this is a letter.
+                end -= 1;
+            } else {
+                break;
+            }
+        }
+
+        return (end > 0) ? text.substring(0, end) as String : text;
     }
 
     //! The box the editor pulses around this slot

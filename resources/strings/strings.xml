@@ -25,6 +25,11 @@
     <string id="BackgroundCharcoal">Charcoal</string>
     <string id="BackgroundMidnight">Midnight Blue</string>
     <string id="SettingShowSeconds">Show seconds</string>
+    <string id="SettingArc">Bottom gauge</string>
+    <string id="SettingArcPrompt">An arc along the bottom rim. Its value replaces the mark, so the two are not shown together.</string>
+    <string id="ArcBattery">Battery</string>
+    <string id="ArcSteps">Steps toward your goal</string>
+    <string id="ArcOff">Off</string>
 
     <!-- Phone settings: second time -->
     <string id="GroupSecondTime">Second time</string>
@@ -45,7 +50,11 @@
     <string id="GroupMark">Mark</string>
     <string id="GroupMarkDesc">The small line of text near the bottom of the face.</string>
     <string id="SettingShowMark">Show the mark</string>
-    <string id="SettingMarkText">Mark text</string>
-    <string id="SettingMarkTextPrompt">Up to ten characters.</string>
+    <string id="SettingMarkPreset">Mark</string>
+    <string id="MarkRescue">RESCUE</string>
+    <string id="MarkMountUp">MOUNT UP</string>
+    <string id="MarkCustom">Custom</string>
+    <string id="SettingMarkText">Custom mark text</string>
+    <string id="SettingMarkTextPrompt">Up to ten characters. Only used when Mark is set to Custom.</string>
 
 </strings>

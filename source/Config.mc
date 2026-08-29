@@ -18,6 +18,7 @@ module Config {
 
     const BACKGROUND_DEFAULT = Graphics.COLOR_BLACK;
     const SHOW_SECONDS_DEFAULT = false;
+    const ARC_METRIC_DEFAULT = BottomArc.BATTERY;
     const ALWAYS_ON_DEFAULT = true;
     const ALWAYS_ON_SECONDS_DEFAULT = false;
     const SECOND_TIME_OFFSET_DEFAULT = 0;
@@ -25,12 +26,20 @@ module Config {
     const SHOW_MARK_DEFAULT = true;
     const MARK_TEXT_DEFAULT = "RESCUE";
 
+    //! Wordings the mark can take. Values match the phone setting's list entries.
+    enum MarkPreset {
+        MARK_RESCUE = 0,
+        MARK_MOUNT_UP = 1,
+        MARK_CUSTOM = 2
+    }
+
     //! Widest offset either way: UTC-12:00 to UTC+14:00, in minutes
     const OFFSET_MIN = -720;
     const OFFSET_MAX = 840;
 
     var _background as Number = BACKGROUND_DEFAULT;
     var _showSeconds as Boolean = SHOW_SECONDS_DEFAULT;
+    var _arcMetric as Number = ARC_METRIC_DEFAULT;
     var _alwaysOn as Boolean = ALWAYS_ON_DEFAULT;
     var _alwaysOnSeconds as Boolean = ALWAYS_ON_SECONDS_DEFAULT;
     var _secondTimeOffset as Number = SECOND_TIME_OFFSET_DEFAULT;
@@ -42,11 +51,15 @@ module Config {
     function reload() as Void {
         _background = numberFor("backgroundColor", BACKGROUND_DEFAULT);
         _showSeconds = booleanFor("showSeconds", SHOW_SECONDS_DEFAULT);
+
+        var arc = numberFor("arcMetric", ARC_METRIC_DEFAULT);
+        _arcMetric = ((arc == BottomArc.OFF) || (arc == BottomArc.BATTERY)
+            || (arc == BottomArc.STEPS)) ? arc : ARC_METRIC_DEFAULT;
         _alwaysOn = booleanFor("alwaysOn", ALWAYS_ON_DEFAULT);
         _alwaysOnSeconds = booleanFor("alwaysOnSeconds", ALWAYS_ON_SECONDS_DEFAULT);
         _secondTimeLabel = stringFor("secondTimeLabel", SECOND_TIME_LABEL_DEFAULT);
         _showMark = booleanFor("showMark", SHOW_MARK_DEFAULT);
-        _markText = stringFor("markText", MARK_TEXT_DEFAULT);
+        _markText = markFor(numberFor("markPreset", MARK_RESCUE));
 
         // The phone app enforces the range, but a value can also arrive from an
         // older install or a hand-edited property, and a wild offset would put the
@@ -68,6 +81,12 @@ module Config {
     //! @return true if seconds are wanted
     function showSeconds() as Boolean {
         return _showSeconds;
+    }
+
+    //! What the bottom rim gauge tracks
+    //! @return A BottomArc metric
+    function arcMetric() as Number {
+        return _arcMetric;
     }
 
     //! Whether the face draws a dimmed always-on render at all
@@ -104,6 +123,26 @@ module Config {
     //! @return The mark text
     function markText() as String {
         return _markText;
+    }
+
+    //! The mark's wording for a preset.
+    //!
+    //! The built-in wordings come from string resources rather than literals so
+    //! they stay in one place: the phone app's picker lists the same resources.
+    //! The custom field is left alone unless it is the one selected, so switching
+    //! to a preset and back does not lose what the user typed.
+    //! @param preset The selected preset
+    //! @return The text to draw
+    function markFor(preset as Number) as String {
+        if (preset == MARK_MOUNT_UP) {
+            return Application.loadResource(Rez.Strings.MarkMountUp) as String;
+        }
+
+        if (preset == MARK_CUSTOM) {
+            return stringFor("markText", MARK_TEXT_DEFAULT);
+        }
+
+        return Application.loadResource(Rez.Strings.MarkRescue) as String;
     }
 
     //! Read a numeric property.

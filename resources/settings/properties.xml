@@ -17,6 +17,9 @@
     <!-- Seconds trailing the main readout, high-power mode only -->
     <property id="showSeconds" type="boolean">false</property>
 
+    <!-- The bottom rim gauge: 0 off, 1 battery, 2 steps. Matches BottomArc.Metric. -->
+    <property id="arcMetric" type="number">1</property>
+
     <!-- Always-on behaviour. Read in Phase 5. -->
     <property id="alwaysOn" type="boolean">true</property>
     <property id="alwaysOnSeconds" type="boolean">false</property>
@@ -25,8 +28,13 @@
     <property id="secondTimeOffset" type="number">0</property>
     <property id="secondTimeLabel" type="string">Z</property>
 
-    <!-- The branding mark -->
+    <!--
+        The branding mark. `markPreset` picks between the built-in wordings;
+        `markText` is only read when the preset is Custom, so switching back and
+        forth does not lose what was typed.
+    -->
     <property id="showMark" type="boolean">true</property>
+    <property id="markPreset" type="number">0</property>
     <property id="markText" type="string">RESCUE</property>
 
 </properties>

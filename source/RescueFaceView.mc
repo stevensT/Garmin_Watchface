@@ -297,8 +297,11 @@ class RescueFaceView extends WatchUi.WatchFace {
             Config.secondTimeOffset(), Config.secondTimeLabel());
         drawSlots(dc);
 
+        BottomArc.draw(dc, width, height, Config.arcMetric(), _theme.accent,
+            Theme.dim(_theme.muted), _theme.data);
+
         if (Config.showMark()) {
-            drawRescueMark(dc, width, height);
+            drawMark(dc, width, height);
         }
     }
 
@@ -406,16 +409,26 @@ class RescueFaceView extends WatchUi.WatchFace {
         }
     }
 
-    //! Draw the small branding mark
+    //! Draw the branding mark across the top of the face.
+    //!
+    //! Drawn in the accent colour, so it reads as belonging to the time rather
+    //! than to the data. It is the one piece of the face that is neither a
+    //! measurement nor a clock.
     //! @param dc The drawing context
     //! @param width Screen width
     //! @param height Screen height
-    private function drawRescueMark(dc as Dc, width as Number, height as Number) as Void {
+    private function drawMark(dc as Dc, width as Number, height as Number) as Void {
         var text = Config.markText();
+        var maxWidth = width * Layout.MARK_MAX_WIDTH;
 
-        dc.setColor(_theme.muted, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width / 2, (height * Layout.markY(_style)).toNumber(), Graphics.FONT_XTINY, text,
-            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        while ((text.length() > 1)
+                && (dc.getTextWidthInPixels(text, Graphics.FONT_XTINY) > maxWidth)) {
+            text = text.substring(0, text.length() - 1) as String;
+        }
+
+        dc.setColor(_theme.accent, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(width / 2, (height * Layout.MARK_Y).toNumber(), Graphics.FONT_XTINY,
+            text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     //! Hand the editor the drawable for the slot it is highlighting

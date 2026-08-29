@@ -30,11 +30,28 @@ module Layout {
     //! as a headline, but no longer competing with the main readout.
     const SECOND_TIME_FONT = Graphics.FONT_SMALL;
 
-    // Minimal: one slot above the time, nothing below it but the second time and
-    // the mark. Nothing competes for the lower half, so the second time gets to
-    // sit where it falls naturally rather than where it fits.
+    //! Vertical centre of the branding mark, at the top rim above the slots.
+    //!
+    //! The same in both styles, and high enough that it reads as a header rather
+    //! than a seventh data point. It clears the top row by more than it looks: a
+    //! FONT_XTINY box is 37 px but its ink is nearer 22, so the mark's glyphs stop
+    //! around y 41 against a row whose own glyphs start around 56.
+    const MARK_Y = 0.065;
+
+    //! Vertical centre of the bottom arc's value, inside the arc's sweep. Not
+    //! style-dependent: the arc sits on the rim, which does not move.
+    const ARC_VALUE_Y = 0.925;
+
+    //! How wide the mark may be. The screen is only about 181 px across at the
+    //! mark's line, and a custom wording can be anything the user types: "MOUNT UP"
+    //! is already 157 px. Past this the mark is trimmed rather than allowed to run
+    //! off the side of a round screen.
+    const MARK_MAX_WIDTH = 0.39;
+
+    // Minimal: one slot above the time, nothing below it but the second time.
+    // Nothing competes for the lower half, so the second time gets to sit where it
+    // falls naturally rather than where it fits.
     const MINIMAL_ZULU_Y = 0.645;
-    const MINIMAL_MARK_Y = 0.82;
     const MINIMAL_TOP_ROW_Y = 0.20;
 
     // Full: two rows of three. Every line below the numerals is placed against the
@@ -42,7 +59,6 @@ module Layout {
     // then occupies 252-305, and the bottom row starts at 312 — the gaps are single
     // digits, so these four numbers are not as free as they look.
     const FULL_ZULU_Y = 0.615;
-    const FULL_MARK_Y = 0.925;
     const FULL_TOP_ROW_Y = 0.20;
     const FULL_BOTTOM_ROW_Y = 0.785;
 
@@ -65,13 +81,6 @@ module Layout {
     //! @return The centre as a fraction of screen height
     function zuluY(style as Styles.Id) as Float {
         return (style == Styles.FULL) ? FULL_ZULU_Y : MINIMAL_ZULU_Y;
-    }
-
-    //! Vertical centre of the RESCUE mark
-    //! @param style The layout style
-    //! @return The centre as a fraction of screen height
-    function markY(style as Styles.Id) as Float {
-        return (style == Styles.FULL) ? FULL_MARK_Y : MINIMAL_MARK_Y;
     }
 
     //! The bounding rect of a slot, as [x, y, width, height] with x,y at the top
