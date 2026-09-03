@@ -16,6 +16,16 @@ const PAD = 8;
 // and being a smudge. Digits in a time readout want none of this, so it defaults
 // to zero and the caller opts in.
 const TRACKING = parseInt(process.env.TRACKING || '0', 10);
+// Give every digit the same advance, and centre its ink inside that advance.
+//
+// Oswald sets its digits proportionally: at 117 px a "1" advances 45 px and a
+// "0" advances 61 px. Centre-justify a proportional "HH:MM" and the colon —
+// which is what the eye reads as the middle of a clock — slides as the digits
+// change, 32 px end to end between 11:00 and 00:11, and the numerals reflow
+// under the reader every time a minute ticks. Equal advances pin both. This is
+// what a clock wants and what "tabular figures" means in a text face; labels
+// and the gauge readout are prose, so it defaults off.
+const TABULAR = parseInt(process.env.TABULAR || '0', 10) !== 0;
 
 function generate(ttfPath, family, weight, size, outDir, outName) {
   GlobalFonts.registerFromPath(ttfPath, family);
@@ -64,6 +74,18 @@ function generate(ttfPath, family, weight, size, outDir, outName) {
       yoffset: minY - PAD,
     };
   });
+
+  // Widen every digit to the widest digit's advance, splitting the difference
+  // either side so the ink stays optically centred in its new box. Only 0-9:
+  // the colon keeps its own narrow advance, as it should.
+  if (TABULAR) {
+    const digits = glyphs.filter((g) => g.ch >= '0' && g.ch <= '9');
+    const em = Math.max(...digits.map((g) => g.advance));
+    for (const g of digits) {
+      g.xoffset += Math.round((em - g.advance) / 2);
+      g.advance = em;
+    }
+  }
 
   // Pack into rows inside a power-of-two atlas.
   const maxW = 512;

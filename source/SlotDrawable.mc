@@ -2,7 +2,15 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 
-//! One data slot: a value with its name underneath, smaller and muted.
+//! One data slot: a name or icon with its value underneath, larger and brighter.
+//!
+//! The caption leads and the value follows. That ordering is not a style choice:
+//! on a round screen the top row's boxes sit where the chord is still narrowing,
+//! and the widest thing in the box is the value. With the value on top its
+//! corners crossed the bezel — 25 px of box and 15 px of value ink, worst on a
+//! five-figure step count. A centred icon or a fitted caption is narrow enough to
+//! have no corners to lose, so the wide element moved down to where the screen is
+//! wider and the overhang went with it.
 //!
 //! This is a `Drawable` rather than plain drawing code because the on-device
 //! editor asks for a `ComplicationDrawableRef` when the user selects a slot, and
@@ -25,9 +33,8 @@ class SlotDrawable extends WatchUi.Drawable {
     //! than one named in the wrong face.
     static var labelFont as Graphics.FontType?;
 
-    //! Gap between the value's band and the top of the label's line. The value
-    //! sits in a band the height of FONT_TINY whatever font it ended up in, so
-    //! without this the label crowds whatever the value's descender space leaves.
+    //! Gap between the bottom of the caption's line and the top of the value's
+    //! band. Without it the value crowds the caption's descender space.
     static const LABEL_GAP = 2;
 
     //! Constructor
@@ -105,33 +112,32 @@ class SlotDrawable extends WatchUi.Drawable {
 
         var centerX = locX + (width / 2);
         var fitted = fit(dc);
-
-        // The value's band is the height of FONT_TINY whatever font the value
-        // ended up in, and the value is centred inside it. Otherwise a slot that
-        // had to drop a size would pull its label up with it, and a row of slots
-        // would sit at ragged heights.
-        var band = dc.getFontHeight(Graphics.FONT_TINY);
-
-        dc.setColor(_valueColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, locY + (band / 2), fitted[1] as Graphics.FontType,
-            fitted[0] as String,
-            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-
-        var lineTop = locY + band + LABEL_GAP;
+        var labelHeight = dc.getFontHeight(labelFace());
 
         var icon = _icon;
         if (icon != null) {
-            // Centred in the label's line rather than sitting on top of it, since
-            // an icon's height varies with its shape while a line of text does not.
-            var labelHeight = dc.getFontHeight(labelFace());
+            // Centred in the caption's line rather than sitting on top of it,
+            // since an icon's height varies with its shape while a line of text
+            // does not. The line keeps its height either way, so a row of slots
+            // holds its value baseline whether it captions with art or with text.
             dc.drawBitmap(centerX - (icon.getWidth() / 2),
-                lineTop + ((labelHeight - icon.getHeight()) / 2), icon);
-            return;
+                locY + ((labelHeight - icon.getHeight()) / 2), icon);
+        } else {
+            dc.setColor(_labelColor, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, locY, labelFace(), fitLabel(dc),
+                Graphics.TEXT_JUSTIFY_CENTER);
         }
 
-        dc.setColor(_labelColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, lineTop, labelFace(), fitLabel(dc),
-            Graphics.TEXT_JUSTIFY_CENTER);
+        // The value's band is the height of FONT_TINY whatever font the value
+        // ended up in, and the value is centred inside it. Otherwise a slot that
+        // had to drop a size would sit at a different height from its neighbours
+        // and a row of slots would look ragged.
+        var band = dc.getFontHeight(Graphics.FONT_TINY);
+
+        dc.setColor(_valueColor, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, locY + labelHeight + LABEL_GAP + (band / 2),
+            fitted[1] as Graphics.FontType, fitted[0] as String,
+            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     //! The face labels are set in, falling back to the smallest system font if the

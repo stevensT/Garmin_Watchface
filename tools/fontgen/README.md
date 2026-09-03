@@ -14,9 +14,9 @@ npm install @napi-rs/canvas
 curl -L -o Oswald.ttf \
   "https://github.com/google/fonts/raw/main/ofl/oswald/Oswald%5Bwght%5D.ttf"
 
-# The numerals, one atlas per screen size.
-node bmfont.js Oswald.ttf Oswald bold 117 ../../resources/fonts        time_numbers
-node bmfont.js Oswald.ttf Oswald bold 107 ../../resources-416x416/fonts time_numbers
+# The numerals, one atlas per screen size. TABULAR is not optional here.
+TABULAR=1 node bmfont.js Oswald.ttf Oswald bold 117 ../../resources/fonts        time_numbers
+TABULAR=1 node bmfont.js Oswald.ttf Oswald bold 107 ../../resources-416x416/fonts time_numbers
 
 # The gauge readout.
 CHARS='0123456789%' \
@@ -36,7 +36,7 @@ labels take `500`, because at 23 px a bold condensed cap is a blob.
 regenerate, and note that **the atlases for the two screen sizes have to be
 regenerated together or they drift.**
 
-## Two knobs
+## Three knobs
 
 - **`CHARS`** — which glyphs land in the atlas. This is the whole economy of the
   thing: the numerals need eleven, the labels 41, and a full character set would
@@ -46,6 +46,15 @@ regenerated together or they drift.**
 - **`TRACKING`** — pixels added to every glyph's advance. A condensed face set in
   all caps at label size sets too tightly to read at a glance; a pixel opens it
   up. Digits in a time readout want none, so it defaults to 0.
+- **`TABULAR`** — give every digit the widest digit's advance and centre its ink
+  in it. **The numerals must be built with this.** Oswald sets digits
+  proportionally: at 117 px a `1` advances 45 px against a `0`'s 61. Centre a
+  proportional `HH:MM` and the colon slides as the digits change — 32 px between
+  `11:00` and `00:11` on the 454 — and the whole readout reflows every minute.
+  Trevor caught this on the wrist as "the time doesn't look centred" before it
+  had a name. With equal advances the colon does not move at all. The cost is
+  that a `1` carries more air around it, which is how every digital clock looks.
+  Off by default: the labels and the gauge readout are prose, not a clock.
 
 ## Choosing a size
 
